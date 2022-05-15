@@ -1,0 +1,232 @@
+-- phpMyAdmin SQL Dump
+-- version 5.1.3
+-- https://www.phpmyadmin.net/
+--
+-- 主機： 127.0.0.1
+-- 產生時間： 2022-05-14 16:36:10
+-- 伺服器版本： 10.4.24-MariaDB
+-- PHP 版本： 8.1.5
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+--
+-- 資料庫: `order_system`
+--
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `order_`
+--
+
+CREATE TABLE `order_` (
+  `OID` int(11) NOT NULL,
+  `status` varchar(256) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `finish_time` datetime NOT NULL,
+  `distance` double NOT NULL,
+  `price` int(11) NOT NULL,
+  `category` varchar(256) NOT NULL,
+  `UID` int(11) NOT NULL,
+  `SID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `order_product`
+--
+
+CREATE TABLE `order_product` (
+  `OID` int(11) NOT NULL,
+  `PID` int(11) NOT NULL,
+  `product_number` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `product`
+--
+
+CREATE TABLE `product` (
+  `PID` int(11) NOT NULL,
+  `commodity_name` varchar(256) NOT NULL,
+  `price` int(11) NOT NULL,
+  `picture` longblob NOT NULL,
+  `SID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `shop`
+--
+
+CREATE TABLE `shop` (
+  `SID` int(11) NOT NULL,
+  `shop_name` varchar(256) NOT NULL,
+  `location` geometry NOT NULL,
+  `phonenumber` varchar(10) NOT NULL,
+  `shop_category` varchar(256) NOT NULL,
+  `UID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `trade_record`
+--
+
+CREATE TABLE `trade_record` (
+  `TID` int(11) NOT NULL,
+  `trade_behavior` varchar(256) NOT NULL,
+  `OID` int(11) NOT NULL,
+  `UID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `user`
+--
+
+CREATE TABLE `user` (
+  `UID` int(11) NOT NULL,
+  `account` varchar(256) NOT NULL,
+  `password` varchar(256) NOT NULL,
+  `user_name` varchar(256) NOT NULL,
+  `identity` varchar(256) NOT NULL,
+  `location` geometry NOT NULL,
+  `phonenumber` varchar(10) NOT NULL,
+  `money` int(11) NOT NULL,
+  `salt` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- 傾印資料表的資料 `user`
+--
+
+INSERT INTO `user` (`UID`, `account`, `password`, `user_name`, `identity`, `location`, `phonenumber`, `money`, `salt`) VALUES
+(7, 'sam', 'f35d027d3d74e5ee565b8a5cd1b8b5c2d81a8676c1cf621a5b65f6e55c8f2d96', 'sam', 'normal', 0x000000000101000000dbf97e6abc743740e4141dc9e5075e40, '0961121575', 0, 3270);
+
+--
+-- 已傾印資料表的索引
+--
+
+--
+-- 資料表索引 `order_`
+--
+ALTER TABLE `order_`
+  ADD PRIMARY KEY (`OID`),
+  ADD KEY `SID` (`SID`),
+  ADD KEY `UID` (`UID`);
+
+--
+-- 資料表索引 `order_product`
+--
+ALTER TABLE `order_product`
+  ADD PRIMARY KEY (`OID`,`PID`),
+  ADD KEY `PID` (`PID`);
+
+--
+-- 資料表索引 `product`
+--
+ALTER TABLE `product`
+  ADD PRIMARY KEY (`PID`),
+  ADD KEY `SID` (`SID`);
+
+--
+-- 資料表索引 `shop`
+--
+ALTER TABLE `shop`
+  ADD PRIMARY KEY (`SID`),
+  ADD KEY `UID` (`UID`);
+
+--
+-- 資料表索引 `trade_record`
+--
+ALTER TABLE `trade_record`
+  ADD PRIMARY KEY (`TID`),
+  ADD KEY `OID` (`OID`),
+  ADD KEY `UID` (`UID`);
+
+--
+-- 資料表索引 `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`UID`);
+
+--
+-- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
+--
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `order_`
+--
+ALTER TABLE `order_`
+  MODIFY `OID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `product`
+--
+ALTER TABLE `product`
+  MODIFY `PID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `shop`
+--
+ALTER TABLE `shop`
+  MODIFY `SID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `trade_record`
+--
+ALTER TABLE `trade_record`
+  MODIFY `TID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `user`
+--
+ALTER TABLE `user`
+  MODIFY `UID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- 已傾印資料表的限制式
+--
+
+--
+-- 資料表的限制式 `order_`
+--
+ALTER TABLE `order_`
+  ADD CONSTRAINT `order__ibfk_1` FOREIGN KEY (`SID`) REFERENCES `shop` (`SID`),
+  ADD CONSTRAINT `order__ibfk_2` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`);
+
+--
+-- 資料表的限制式 `order_product`
+--
+ALTER TABLE `order_product`
+  ADD CONSTRAINT `order_product_ibfk_1` FOREIGN KEY (`OID`) REFERENCES `order_` (`OID`),
+  ADD CONSTRAINT `order_product_ibfk_2` FOREIGN KEY (`PID`) REFERENCES `product` (`PID`);
+
+--
+-- 資料表的限制式 `product`
+--
+ALTER TABLE `product`
+  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`SID`) REFERENCES `shop` (`SID`);
+
+--
+-- 資料表的限制式 `shop`
+--
+ALTER TABLE `shop`
+  ADD CONSTRAINT `shop_ibfk_1` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`);
+
+--
+-- 資料表的限制式 `trade_record`
+--
+ALTER TABLE `trade_record`
+  ADD CONSTRAINT `trade_record_ibfk_1` FOREIGN KEY (`OID`) REFERENCES `order_` (`OID`),
+  ADD CONSTRAINT `trade_record_ibfk_2` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`);
+COMMIT;
