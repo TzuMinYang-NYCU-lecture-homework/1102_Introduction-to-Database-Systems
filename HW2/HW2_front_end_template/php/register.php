@@ -42,7 +42,7 @@
 
         # 檢查輸入的資料
         if($stmt->rowCount() == 1) # 帳號已被註冊
-            throw new Exception('ACCOUNT ERROR: The account has benn used.');
+            throw new Exception('ACCOUNT ERROR: The account has been used.');
 
         if (!preg_match("/^[a-zA-Z0-9]*$/",$account)) # 檢查account格式
             throw new Exception('ACCOUNT ERROR: Only letters and numbers allowed');

@@ -23,9 +23,13 @@
       <div class="navbar-header">
         <a class="navbar-brand " href="#">WebSiteName</a>
       </div>
+      <div class="navbar-header">
+        <a class="active" href="./php/logout.php">Logout</a>
+      </div>
 
     </div>
   </nav>
+  
   <div class="container">
 
     <ul class="nav nav-tabs">
@@ -40,32 +44,54 @@
         <h3>Profile</h3>
         <div class="row">
           <div class="col-xs-12">
-            Accouont: sherry, user, PhoneNumber: 0912345678,  location: 24.786944626633865, 120.99753981198887
-            
+            <?php
+            session_start();
+            $dbservername = 'localhost';
+            $dbname = 'order_system';
+            $dbusername = 'root';
+            $dbpassword = '';
+            $acc=$_SESSION['account'];
+            $conn = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
+            if ($conn->connect_error) {
+              die("Connection failed: " . $conn->connect_error);
+            }
+            $sql = "SELECT UID, account, user_name, identity, phonenumber, ST_AsText(location) as location FROM user where account='$acc'";
+            $result = $conn->query($sql);
+            while($row = $result->fetch_assoc()) {
+              $output = ltrim($row["location"], "POINT(");
+              $output1 = rtrim($output,")");
+              $_SESSION['phonenumber']=$row["phonenumber"];
+              $_SESSION['UID']=$row["UID"];
+              $_SESSION['identity']=$row["identity"];
+
+              echo "Account: " . $row["account"]. " User: " . $row["user_name"]. " PhoneNumber: " . $row["phonenumber"]." Location: " . $output1;
+            }
+            ?>
             <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
             data-target="#location">edit location</button>
             <!--  -->
-            <div class="modal fade" id="location"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-              <div class="modal-dialog  modal-sm">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">edit location</h4>
-                  </div>
-                  <div class="modal-body">
-                    <label class="control-label " for="latitude">latitude</label>
-                    <input type="text" class="form-control" id="latitude" placeholder="enter latitude">
-                      <br>
-                      <label class="control-label " for="longitude">longitude</label>
-                    <input type="text" class="form-control" id="longitude" placeholder="enter longitude">
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Edit</button>
+            <form action="./php/edit.php" method="POST">
+              <div class="modal fade" id="location"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog  modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">edit location</h4>
+                    </div>
+                      <div class="modal-body">
+                        <label class="control-label " for="latitude">latitude</label>
+                        <input type="text" class="form-control" name="latitude" id="latitude" placeholder="enter latitude">
+                          <br>
+                        <label class="control-label " for="longitude">longitude</label>
+                        <input type="text" class="form-control" name="longitude" id="longitude" placeholder="enter longitude">
+                      </div>
+                      <div class="modal-footer">
+                        <input type="submit" class="btn btn-default" value="Edit">
+                      </div>
                   </div>
                 </div>
               </div>
-            </div>
-
+            </form>
 
 
             <!--  -->
@@ -96,68 +122,70 @@
         <!-- 
                 
              -->
-        <h3>Search</h3>
-        <div class=" row  col-xs-8">
-          <form class="form-horizontal" action="/action_page.php">
-            <div class="form-group">
-              <label class="control-label col-sm-1" for="Shop">Shop</label>
-              <div class="col-sm-5">
-                <input type="text" class="form-control" placeholder="Enter Shop name">
-              </div>
-              <label class="control-label col-sm-1" for="distance">distance</label>
-              <div class="col-sm-5">
-
-
-                <select class="form-control" id="sel1">
-                  <option>near</option>
-                  <option>medium </option>
-                  <option>far</option>
-
-                </select>
-              </div>
-
-            </div>
-
-            <div class="form-group">
-
-              <label class="control-label col-sm-1" for="Price">Price</label>
-              <div class="col-sm-2">
-
-                <input type="text" class="form-control">
-
-              </div>
-              <label class="control-label col-sm-1" for="~">~</label>
-              <div class="col-sm-2">
-
-                <input type="text" class="form-control">
-
-              </div>
-              <label class="control-label col-sm-1" for="Meal">Meal</label>
-              <div class="col-sm-5">
-                <input type="text" list="Meals" class="form-control" id="Meal" placeholder="Enter Meal">
-                <datalist id="Meals">
-                  <option value="Hamburger">
-                  <option value="coffee">
-                </datalist>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="control-label col-sm-1" for="category"> category</label>
-            
-              
+        <form action="./php/search.php" method="POST">
+          <h3>Search</h3>
+          <div class=" row  col-xs-8">
+            <form class="form-horizontal" action="/action_page.php">
+              <div class="form-group">
+                <label class="control-label col-sm-1" for="Shop">Shop</label>
                 <div class="col-sm-5">
-                  <input type="text" list="categorys" class="form-control" id="category" placeholder="Enter shop category">
-                  <datalist id="categorys">
-                    <option value="fast food">
-               
+                  <input type="text" class="form-control" name="shop" placeholder="Enter Shop name">
+                </div>
+                <label class="control-label col-sm-1" for="distance">distance</label>
+                <div class="col-sm-5">
+
+
+                  <select class="form-control" name="distance" id="sel1">
+                    <option>near</option>
+                    <option>medium </option>
+                    <option>far</option>
+
+                  </select>
+                </div>
+
+              </div>
+
+              <div class="form-group">
+
+                <label class="control-label col-sm-1" for="Price">Price</label>
+                <div class="col-sm-2">
+
+                  <input type="text" name="lprice" class="form-control">
+
+                </div>
+                <label class="control-label col-sm-1" for="~">~</label>
+                <div class="col-sm-2">
+
+                  <input type="text" name="rprice" class="form-control">
+
+                </div>
+                <label class="control-label col-sm-1" for="Meal">Meal</label>
+                <div class="col-sm-5">
+                  <input type="text" list="Meals" class="form-control" name="meal" id="Meal" placeholder="Enter Meal">
+                  <datalist id="Meals">
+                    <option value="Hamburger">
+                    <option value="coffee">
                   </datalist>
                 </div>
-                <button type="submit" style="margin-left: 18px;"class="btn btn-primary">Search</button>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label col-sm-1" for="category"> category</label>
               
-            </div>
-          </form>
-        </div>
+                
+                  <div class="col-sm-5">
+                    <input type="text" list="categorys" class="form-control" name="category" id="category" placeholder="Enter shop category">
+                    <datalist id="categorys">
+                      <option value="fast food">
+                
+                    </datalist>
+                  </div>
+                  <button type="submit" style="margin-left: 18px;"class="btn btn-primary">Search</button>
+                
+              </div>
+            </form>
+          </div>
+        </form>
         <div class="row">
           <div class="  col-xs-8">
             <table class="table" style=" margin-top: 15px;">
@@ -171,17 +199,42 @@
                
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-               
-                  <td>macdonald</td>
-                  <td>fast food</td>
-                
-                  <td>near </td>
-                  <td>  <button type="button" class="btn btn-info " data-toggle="modal" data-target="#macdonald">Open menu</button></td>
-            
-                </tr>
+              <?php
+                $x = 1;
+                if(isset($_SESSION['shop']))
+                {
+                  foreach($_SESSION['shop'] as $row)
+                  {
+                    echo <<<EOT
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <tbody>
+                      <tr>
+                        <th scope="row">
+                    </body>
+                    </html>
+                    EOT;
+                    echo $x . "</th>";
+                    echo "<td>". $row['shop_name'] . "</td>";
+                        
+                    echo "<td>" . $row['shop_category'] ."</td>";
+                    
+                    echo"<td>". $_SESSION['distance']. "</td>";
+                    $x++;
+                    echo <<<EOT
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                          <td>  <button type="button" class="btn btn-info " data-toggle="modal" data-target="#macdonald">Open menu</button></td>
+                        </tr>
+                    </body>
+                    </html>
+                    EOT;
+                        
+                    }
+                }
+              ?>
            
 
               </tbody>
@@ -261,36 +314,37 @@
         </div>
       </div>
       <div id="menu1" class="tab-pane fade">
-
-        <h3> Start a business </h3>
-        <div class="form-group ">
-          <div class="row">
-            <div class="col-xs-2">
-              <label for="ex5">shop name</label>
-              <input class="form-control" id="ex5" placeholder="macdonald" type="text" >
-            </div>
-            <div class="col-xs-2">
-              <label for="ex5">shop category</label>
-              <input class="form-control" id="ex5" placeholder="fast food" type="text" >
-            </div>
-            <div class="col-xs-2">
-              <label for="ex6">latitude</label>
-              <input class="form-control" id="ex6" placeholder="121.00028167648875" type="text" >
-            </div>
-            <div class="col-xs-2">
-              <label for="ex8">longitude</label>
-              <input class="form-control" id="ex8" placeholder="24.78472733371133" type="text" >
+        <form action="./php/registershop.php" method="POST">
+          <h3> Start a business </h3>
+          <div class="form-group ">
+            <div class="row">
+              <div class="col-xs-2">
+                <label for="ex5">shop name</label>
+                <input class="form-control" name="name" id="ex5" placeholder="macdonald" type="text" >
+              </div>
+              <div class="col-xs-2">
+                <label for="ex5">shop category</label>
+                <input class="form-control" name="category" id="ex5" placeholder="fast food" type="text" >
+              </div>
+              <div class="col-xs-2">
+                <label for="ex6">latitude</label>
+                <input class="form-control" name="latitude" id="ex6" placeholder="24.78472733371133" type="text" >
+              </div>
+              <div class="col-xs-2">
+                <label for="ex8">longitude</label>
+                <input class="form-control" name="longitude" id="ex8" placeholder="121.00028167648875" type="text" >
+              </div>
             </div>
           </div>
-        </div>
 
 
 
-        <div class=" row" style=" margin-top: 25px;">
-          <div class=" col-xs-3">
-            <button type="button" class="btn btn-primary"  >register</button>
+          <div class=" row" style=" margin-top: 25px;">
+            <div class=" col-xs-3">
+              <button type="submit" class="btn btn-primary"  >register</button>
+            </div>
           </div>
-        </div>
+        </form>
         <hr>
         <h3>ADD</h3>
 
