@@ -28,7 +28,7 @@
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); # set the PDO error mode to exception 
 
         # SQL查詢
-        $stmt = $conn->prepare("select account, password, salt from user where account=:account");
+        $stmt = $conn->prepare("select account, password, salt from user where binary account=:account");
         $stmt->execute(array(':account' => $account));  # 防SQL injection
 
         # 確認查詢結果

@@ -116,8 +116,6 @@
     <ul class="nav nav-tabs">
       <li class="active"><a href="#home">Home</a></li>
       <li><a href="#menu1">shop</a></li>
-
-
     </ul>
 
     <div class="tab-content">
@@ -233,69 +231,123 @@
 
               <div class="form-group">
                 <label class="control-label col-sm-1" for="category"> category</label>
-                  <div class="col-sm-5">
-                    <input type="text" list="categorys" class="form-control" name="category" id="category" placeholder="Enter shop category">
-                    <datalist id="categorys">
-                      <option value="fast food">
-                    </datalist>
-                  </div>
-                  <button type="submit" style="margin-left: 18px;"class="btn btn-primary">Search</button>
+                <div class="col-sm-5">
+                  <input type="text" list="categorys" class="form-control" name="category" id="category" placeholder="Enter shop category">
+                  <datalist id="categorys">
+                    <option value="fast food">
+                  </datalist>
+                </div>
+                <label class="control-label col-sm-1" for="distance">sort</label>
+                <div class="col-sm-5">
+                  <select class="form-control" name="order" id="sel1">
+                    <option>shop_name</option>
+                    <option>shop_category</option>
+                    <option>distance</option>
+                  </select>
+                  <select class="form-control" name="by" id="sel1">
+                    <option>increase</option>
+                    <option>decrease</option>
+                  </select>
+                </div>
+                <button type="submit" style="margin-left: 18px;"class="btn btn-primary">Search</button>
               </div>
             </form>
           </div>
         </form>
-
         <div class="row">
           <div class="  col-xs-8">
-            <table class="table" style=" margin-top: 15px;">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">shop name</th>
-                  <th scope="col">shop category</th>
-                  <th scope="col">Distance</th>
-                  <th scope="col">menu</th>
-                </tr>
-              </thead>
-              <tbody>
+            <ul class="nav nav-pills">
+              <li class="active"><a href="#tab1" data-toggle="tab">1</a></li>
+            <?php
+              ### 顯示店家搜尋結果 ###
+              if(isset($_SESSION['search']) && $_SESSION['search'] > 0)
+              {
+                $acc=$_SESSION['account'];
+                $tab_count = count($_SESSION['shop']) / 5 + 1;
 
-              <?php
-                ### 顯示店家搜尋結果 ###
+                for($i = 2; $i <= $tab_count; $i++) # 分頁數量
+                  echo "<li><a href=\"#tab$i\" data-toggle=\"tab\">$i</a></li>";
+                echo "</ul>";
+
+                echo "<div id=\"myTabContent\" class=\"tab-content\">"; # 分頁內容
+
                 $count = 1;
-                if(isset($_SESSION['shop']))
+                $cur_tab_num = 0;
+                foreach($_SESSION['shop'] as $index=>$single_row)
                 {
-                  foreach($_SESSION['shop'] as $row)
+                  $sid = $index;
+                  $stmt = $conn->prepare("select shop_name, shop_category, st_distance_sphere(user_location, shop_location) as distance FROM shop, user where SID=:sid and account='$acc'");
+                  $stmt->execute(array(':sid' => $sid));
+                  $row = $stmt->fetch();
+                  $shop_name = $row['shop_name'];
+                  $category = $row['shop_category'];
+                  $distance = $row['distance'];
+
+                  if($count % 5 == 1) # 五個中的第一個的資料開始前要先建tab
                   {
-                    $sid = $row['sid'];
-                    $shop_name = $row['shop_name'];
-                    $category = $row['shop_category'];
-                    $distance = $_SESSION['distance'];
-
+                    $cur_tab_num++;
+                    if($count == 1) $active = "active";
+                    else $active = "";
                     echo <<<EOT
-                    <tr>
-                      <th scope="row"> $count </th>
-                      <td> $shop_name </td>
-                      <td> $category </td>
-                      <td> $distance </td>
-                      <td> <button type="button" class="btn btn-info " data-toggle="modal" data-target="#shop$sid">Open menu</button> </td>
-                    </tr>
+                    <div class="tab-pane $active" id="tab$cur_tab_num">
+                      <table class="table" style=" margin-top: 15px;">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">shop name</th>
+                          <th scope="col">shop category</th>
+                          <th scope="col">Distance</th>
+                          <th scope="col">menu</th>
+                        </tr>
+                      </thead>
+                      <tbody>
                     EOT;
-
-                    $count++;
                   }
-                }
-              ?>
 
-              </tbody>
-            </table>
+                  echo <<<EOT
+                      <tr>
+                        <th scope="row"> $count </th>
+                        <td> $shop_name </td>
+                        <td> $category </td>
+                        <td> $distance </td>
+                        <td> <button type="button" class="btn btn-info " data-toggle="modal" data-target="#shop$sid">Open menu</button> </td>
+                      </tr>
+                  EOT;
+
+
+                  if($count % 5 == 0) # 五個中的第五個的資料結束後補上
+                  {
+                    echo <<<EOT
+                          </tbody>
+                        </table>
+                      </div>
+                    EOT;
+                  }
+                  $count++;
+                }
+
+                if($count % 5 != 0) # 最後一頁未滿五個還是要補上
+                {
+                  echo <<<EOT
+                        </tbody>
+                      </table>
+                    </div>
+                  EOT;
+                }
+                
+                echo "</div>";
+              }
+            ?>
+          </div>
+        </div>
 
             <?php
               ### 每個店家的餐點的modal ###
               if(isset($_SESSION['shop']))
               {
-                foreach($_SESSION['shop'] as $row)
+                foreach($_SESSION['shop'] as $index=>$single_row)
                 {
-                  $sid = $row['sid'];
+                  $sid = $index;
                   echo <<<EOT
                   <!-- Modal -->
                   <div class="modal fade" id="shop$sid"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -369,9 +421,6 @@
                 }
               }
             ?>
-
-          </div>
-      </div>
     </div>
       <?php
         ### 查詢自己擁有的店家資訊 ###
@@ -387,7 +436,7 @@
         else
         {
           # SQL查詢
-          $stmt = $conn->prepare("select sid, shop_name, shop_category, ST_AsText(shop_location) as location FROM shop, user where shop.uid=user.uid and account=:account");
+          $stmt = $conn->prepare("select SID, shop_name, shop_category, ST_AsText(shop_location) as location FROM shop, user where shop.uid=user.uid and account=:account");
           $stmt->execute(array(':account' => $account));  # 防SQL injection
 
           $row = $stmt->fetch();
@@ -402,7 +451,7 @@
           $category = $row["shop_category"];
 
           # 後面add meal在php需要sid資訊
-          $_SESSION['sid'] = $row["sid"];
+          $_SESSION['sid'] = $row["SID"];
         }
       ?>
       <div id="menu1" class="tab-pane fade">
