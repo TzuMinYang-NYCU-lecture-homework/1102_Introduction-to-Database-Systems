@@ -8,8 +8,9 @@
     try
     {
         # 取得REQUEST的資料
-        $account = $_REQUEST['account'];
+        $account = strval($_REQUEST['account']);
 
+        # 避免直接輸入網址跳過來
         if (!isset($_REQUEST['account']))
         {
             echo 'FAILED';

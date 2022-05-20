@@ -4,607 +4,100 @@
     $dbname = 'order_system';
     $dbusername = 'root';
     $dbpassword = '';   # root沒設密碼
-    # 取得POST的資料
-    $shop_name = $_POST['shop'];
-    $distance = $_POST['distance'];
-    $_SESSION['distance']=$_POST['distance'];
-    $lprice = $_POST['lprice'];
-    $rprice = $_POST['rprice'];
-    $meal = $_POST['meal'];
-    $category = $_POST['category'];
-    # create PDO
-    $conn = new PDO("mysql:host=$dbservername;dbname=$dbname", $dbusername, $dbpassword);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); # set the PDO error mode to exception 
-    $acc=$_SESSION['account'];
-    # SQL查詢
-    if($distance=='near')
+
+    try
     {
-        if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
+        # 避免直接輸入網址跳過來
+        if (!isset($_POST['shop']) || !isset($_POST['distance']) || !isset($_POST['lprice']) || !isset($_POST['rprice']) || !isset($_POST['meal']) || !isset($_POST['category']))
         {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
+            header("Location: ../index.php");
+            exit();
         }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
+        # 取得POST的資料
+        $shop_name = $_POST['shop'];
+        $distance = $_POST['distance'];
+        $lprice = $_POST['lprice'];
+        $rprice = $_POST['rprice'];
+        $meal = $_POST['meal'];
+        $category = $_POST['category'];
+
+        $account = $_SESSION['account'];        
+        $_SESSION['distance'] = $_POST['distance']; #!!!        
+
+        # create PDO
+        $conn = new PDO("mysql:host=$dbservername;dbname=$dbname", $dbusername, $dbpassword);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); # set the PDO error mode to exception 
+
+        # SQL查詢
+        $conditions = [];
+        $parameters = [];
+         
+        // conditional statements
+        if (strlen($shop_name) != 0)
         {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
+            $conditions[] = 'name LIKE ?';
+            $parameters[] = "%$shop_name%";
         }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
+         
+        if (strlen($distance) != 0)
         {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
+            $conditions[] = 'category = ?';
+            $parameters[] = $_GET['category'];
         }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
+         
+        if (strlen($lprice) != 0 && strlen($rprice) != 0)
         {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
+            // BETWEEN
+            $conditions[] = 'created_at BETWEEN ? AND ?';
+            $parameters[] = $_GET['date_start'];
+            $parameters[] = $_GET['date_end'];
         }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
+
+        if (strlen($meal) != 0)
         {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
+            $conditions[] = 'category = ?';
+            $parameters[] = $_GET['category'];
         }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
+
+        if (strlen($category) != 0)
         {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
+            $conditions[] = 'shop_category = ?';
+            $parameters[] = $_GET['category'];
         }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
+         
+        // the main query
+        $sql = "SELECT * FROM products";
+         
+        // 把條件組合成 query 語法
+        if ($conditions)
         {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
+            $sql .= " WHERE ".implode(" AND ", $conditions);
         }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and commodity_name like '%$meal%' and shop_category like '%$category%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and commodity_name like '%$meal%' and shop_category like '%$category%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and shop_category like '%$category%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and commodity_name like '%$meal%'");
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-           and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_category like '%$category%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and commodity_name like '%$meal%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop_name like '%$shop_name%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :rprice>=price");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) < 1000 
-            and shop.SID=product.SID and :lprice<=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user where account='$acc' and ST_Distance(user.location, shop.location) < 1000");
-        }
-        $stmt->execute();
+         
+        // the usual prepare/execute/fetch routine
+        $stmt = $pdo->prepare($sql);
+        //丟入參數
+        $stmt->execute($parameters);
+        $data = $stmt->fetchAll();
+
+        $_SESSION['shop'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        header("Location: ../nav.php");
     }
-    else if($distance=='far')
+
+    
+    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回登入頁面
     {
-        if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and commodity_name like '%$meal%' and shop_category like '%$category%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and commodity_name like '%$meal%' and shop_category like '%$category%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and shop_category like '%$category%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and commodity_name like '%$meal%'");
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-           and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_category like '%$category%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and commodity_name like '%$meal%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop_name like '%$shop_name%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :rprice>=price");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) > 5000 
-            and shop.SID=product.SID and :lprice<=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user where account='$acc' and ST_Distance(user.location, shop.location) > 5000");
-        }
-        $stmt->execute();
+        $msg = $e->getMessage();
+        echo <<<EOT
+        <!DOCTYPE html>
+        <html>
+        <body>
+            <script>
+                alert("$msg");
+                window.location.replace("../sign-up.php");
+            </script>
+        </body>
+        </html>
+        EOT;
     }
-    else
-    {
-        if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%' and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and commodity_name like '%$meal%' and shop_category like '%$category%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and commodity_name like '%$meal%' and shop_category like '%$category%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :lprice<=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and shop_category like '%$category%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and commodity_name like '%$meal%'");
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and commodity_name like '%$meal%'");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-           and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(!empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :lprice<=price and :rprice>=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && !empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_category like '%$category%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && !empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and commodity_name like '%$meal%'");
-        }
-        else if(!empty($_POST['shop']) && empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop_name like '%$shop_name%'");
-        }
-        else if(empty($_POST['shop']) && empty($_POST['lprice']) && !empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :rprice>=price");
-            $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
-        }
-        else if(empty($_POST['shop']) && !empty($_POST['lprice']) && empty($_POST['rprice']) && empty($_POST['meal']) && empty($_POST['category']))
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category, shop_category from shop, user, product where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000 
-            and shop.SID=product.SID and :lprice<=price");
-            $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
-        }
-        else
-        {
-            $stmt = $conn->prepare("select shop_name, shop_category from shop, user where account='$acc' and ST_Distance(user.location, shop.location) <= 5000 and ST_Distance(user.location, shop.location) >= 1000");
-        }
-        $stmt->execute();
-    }
-    $_SESSION['shop'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    header("Location: ../nav.php");
 ?>

@@ -16,8 +16,8 @@
         }
 
         # 有東西是空的
-        if (empty($_POST['account'])) throw new Exception('ACCOUNT ERROR: Please input something.');
-        if (empty($_POST['password'])) throw new Exception('PASSWORD ERROR: Please input something.');
+        if (strlen($_POST['account']) == 0) throw new Exception('ACCOUNT ERROR: Please input something.');
+        if (strlen($_POST['password']) == 0) throw new Exception('PASSWORD ERROR: Please input something.');
 
         # 取得POST的資料
         $account = $_POST['account'];
@@ -51,9 +51,10 @@
         }
     }
 
-    catch(Exception $e)
+    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回登入頁面
     {
         $msg = $e->getMessage();
+        # 記得要清除session !!!好像不清也不會怎樣?
         session_unset();
         session_destroy();
         echo <<<EOT

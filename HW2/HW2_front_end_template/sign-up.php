@@ -65,23 +65,23 @@
 			{
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
-				var message;
-				if (this.readyState == 4 && this.status == 200) 
-				{
-					switch(this.responseText) 
+					var message;
+					if (this.readyState == 4 && this.status == 200) 
 					{
-						case 'YES':
-							message='The account is available.';
-							break;
-						case 'NO':
-							message='The account has benn used.';
-							break;
-						default:
-							message='Oops. There is something wrong.';
-							break;
+						switch(this.responseText) 
+						{
+							case 'YES':
+								message='The account is available.';
+								break;
+							case 'NO':
+								message='The account has been used.';
+								break;
+							default:
+								message='Oops. There is something wrong.';
+								break;
+						}
+						document.getElementById("msg").innerHTML = message;
 					}
-					document.getElementById("msg").innerHTML = message;
-				}
 				};
 				xhttp.open("POST", "./php/check_account.php", true);
 				xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -101,7 +101,7 @@
 					
 
 					<!-- Start Sign In Form -->
-					<form action="./php/register.php" method="POST" class="fh5co-form animate-box" data-animate-effect="fadeIn">
+					<form action="./php/register_user.php" method="POST" class="fh5co-form animate-box" data-animate-effect="fadeIn">
 						<h2>Sign Up</h2>
 						<!-- <div class="form-group">
 							<div class="alert alert-success" role="alert">Your info has been saved.</div>
