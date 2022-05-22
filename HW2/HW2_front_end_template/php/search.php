@@ -22,189 +22,189 @@
     # SQL查詢
     if($distance=='')
     {
-        if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category, st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and meal_name like '%$meal%' and shop_category like '%$category%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and meal_name like '%$meal%' and shop_category like '%$category%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and shop_category like '%$category%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and meal_name like '%$meal%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
            and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop_category like '%$category%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and meal_name like '%$meal%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user where account='$acc' 
             and shop_name like '%$shop_name%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :rprice>=price");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
             and shop.SID=product.SID and :lprice<=price");
@@ -218,189 +218,189 @@
     }
     else if($distance=='near')
     {
-        if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category, st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and meal_name like '%$meal%' and shop_category like '%$category%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and meal_name like '%$meal%' and shop_category like '%$category%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and shop_category like '%$category%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and meal_name like '%$meal%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
            and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_category like '%$category%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and meal_name like '%$meal%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop_name like '%$shop_name%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :rprice>=price");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
             and shop.SID=product.SID and :lprice<=price");
@@ -414,189 +414,189 @@
     }
     else if($distance=='far')
     {
-        if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and meal_name like '%$meal%' and shop_category like '%$category%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and meal_name like '%$meal%' and shop_category like '%$category%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and shop_category like '%$category%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and meal_name like '%$meal%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
            and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_category like '%$category%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and meal_name like '%$meal%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop_name like '%$shop_name%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :rprice>=price");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
             and shop.SID=product.SID and :lprice<=price");
@@ -610,189 +610,189 @@
     }
     else
     {
-        if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%' and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and meal_name like '%$meal%' and shop_category like '%$category%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and meal_name like '%$meal%' and shop_category like '%$category%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :rprice>=price and shop_category like '%$category%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :lprice<=price and shop_category like '%$category%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :lprice<=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and shop_category like '%$category%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and meal_name like '%$meal%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price and meal_name like '%$meal%'");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
            and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(!strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%' and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :lprice<=price and :rprice>=price");
             $stmt->bindParam(':lprice', $lprice, PDO::PARAM_STR);
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && !strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && !(strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_category like '%$category%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && !strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and meal_name like '%$meal%'");
         }
-        else if(!strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop_name like '%$shop_name%'");
         }
-        else if(strlen($_POST['shop']) != 0 && strlen($_POST['lprice']) != 0 && !strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && !(strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :rprice>=price");
             $stmt->bindParam(':rprice', $rprice, PDO::PARAM_STR);
         }
-        else if(strlen($_POST['shop']) != 0 && !strlen($_POST['lprice']) != 0 && strlen($_POST['rprice']) != 0 && strlen($_POST['meal']) != 0 && strlen($_POST['category']) != 0)
+        else if((strlen($shop_name) == 0) && !(strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance, shop_category from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
             and shop.SID=product.SID and :lprice<=price");

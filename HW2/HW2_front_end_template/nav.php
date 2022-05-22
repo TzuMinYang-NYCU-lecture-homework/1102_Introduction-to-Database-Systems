@@ -271,10 +271,12 @@
 
                 echo "<div id=\"myTabContent\" class=\"tab-content\">"; # 分頁內容
 
-                $count = 1;
+                $count = 0;
                 $cur_tab_num = 0;
                 foreach($_SESSION['shop'] as $index=>$single_row)
                 {
+                  $count++;
+                  
                   $sid = $index;
                   $stmt = $conn->prepare("select shop_name, shop_category, st_distance_sphere(user_location, shop_location) as distance FROM shop, user where SID=:sid and account='$acc'");
                   $stmt->execute(array(':sid' => $sid));
@@ -323,7 +325,6 @@
                       </div>
                     EOT;
                   }
-                  $count++;
                 }
 
                 if($count % 5 != 0) # 最後一頁未滿五個還是要補上
