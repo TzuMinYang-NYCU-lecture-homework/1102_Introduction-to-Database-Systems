@@ -191,7 +191,7 @@
         else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' 
-            and meal_name like '%$meal%'");
+            and meal_name like '%$meal%' and product.SID=shop.SID");
         }
         else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
@@ -387,7 +387,7 @@
         else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) < 5000 
-            and meal_name like '%$meal%'");
+            and meal_name like '%$meal%' and shop.SID=product.SID");
         }
         else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
@@ -583,7 +583,7 @@
         else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) > 20000 
-            and meal_name like '%$meal%'");
+            and meal_name like '%$meal%' and shop.SID=product.SID");
         }
         else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
@@ -779,7 +779,7 @@
         else if((strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && !(strlen($meal) == 0) && (strlen($category) == 0))
         {
             $stmt = $conn->prepare("select shop.SID, shop_name, shop_category,  st_distance_sphere(user_location, shop_location) as distance from shop, user, product where account='$acc' and st_distance_sphere(user_location, shop_location) <= 20000 and st_distance_sphere(user_location, shop_location) >= 5000 
-            and meal_name like '%$meal%'");
+            and meal_name like '%$meal%' and shop.SID=product.SID");
         }
         else if(!(strlen($shop_name) == 0) && (strlen($lprice) == 0) && (strlen($rprice) == 0) && (strlen($meal) == 0) && (strlen($category) == 0))
         {
