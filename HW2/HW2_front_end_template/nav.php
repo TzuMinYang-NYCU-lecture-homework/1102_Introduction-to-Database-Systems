@@ -263,7 +263,7 @@
               if(isset($_SESSION['search']) && $_SESSION['search'] > 0)
               {
                 $acc=$_SESSION['account'];
-                $tab_count = count($_SESSION['shop']) / 5 + 1;
+                $tab_count = ceil(count($_SESSION['shop']) / 5); # e.g. 9間10間都要是兩頁
 
                 for($i = 2; $i <= $tab_count; $i++) # 分頁數量
                   echo "<li><a href=\"#tab$i\" data-toggle=\"tab\">$i</a></li>";
