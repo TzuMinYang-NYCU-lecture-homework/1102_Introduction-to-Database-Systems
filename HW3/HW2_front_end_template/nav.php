@@ -20,7 +20,7 @@
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); # set the PDO error mode to exception 
 
     # SQL查詢
-    $stmt = $conn->prepare("select UID, account, user_name, identity, phonenumber, ST_AsText(user_location) as location FROM user where account=:account");
+    $stmt = $conn->prepare("select UID, account, user_name, identity, phonenumber, ST_AsText(user_location) as location, money FROM user where account=:account");
     $stmt->execute(array(':account' => $account));  # 防SQL injection
 
     # 確認查詢結果
@@ -104,10 +104,6 @@
       <div class="navbar-header">
         <a class="navbar-brand " href="#">WebSiteName</a>
       </div>
-      <div class="navbar-header">
-        <a class="active" href="./php/logout.php">Logout</a>
-      </div>
-
     </div>
   </nav>
   
@@ -115,7 +111,11 @@
 
     <ul class="nav nav-tabs">
       <li class="active"><a href="#home">Home</a></li>
-      <li><a href="#menu1">shop</a></li>
+      <li><a href="#menu1">Shop</a></li>
+      <li><a href="#my_order">My Order</a></li>
+      <li><a href="#shop_order">Shop Order</a></li>
+      <li><a href="#transaction_record">Transaction Record</a></li>
+      <li><a href="./php/logout.php">Logout</a></li>
     </ul>
 
     <div class="tab-content">
@@ -133,6 +133,8 @@
               $_SESSION['phonenumber'] = $row["phonenumber"];
               $_SESSION['UID'] = $row["UID"];
               $_SESSION['identity'] = $row["identity"];
+              $_SESSION['money'] = $row["money"];
+              $_SESSION['user_name'] = $row["user_name"]; # add money和add order要用，因為新增交易紀錄需要
 
               echo "Account: " . $row["account"] . " User: " . $row["user_name"] . " PhoneNumber: " . $row["phonenumber"] ." Location: " . $location;
             ?>
@@ -164,26 +166,28 @@
 
 
             <!--  -->
-            walletbalance: 100
+            walletbalance: <?php echo $_SESSION['money']?>
             <!-- Modal -->
             <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
-              data-target="#myModal">Add value</button>
-            <div class="modal fade" id="myModal"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-              <div class="modal-dialog  modal-sm">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Add value</h4>
-                  </div>
-                  <div class="modal-body">
-                    <input type="text" class="form-control" id="value" placeholder="enter add value">
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Add</button>
+              data-target="#myModal">Recharge</button>
+            <form action="./php/add_money.php" method="POST">
+              <div class="modal fade" id="myModal"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog  modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Recharge</h4>
+                    </div>
+                    <div class="modal-body">
+                      <input type="number" min="1" value="1" class="form-control" name="value" id="value" placeholder="enter add value">
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-default">Add</button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
 
@@ -350,6 +354,8 @@
                 {
                   $sid = $index;
                   echo <<<EOT
+                  <form action="calculate_order_price.php" method="POST">
+                  <input class="form-control" name="sid" value="$sid" type="hidden">
                   <!-- Modal -->
                   <div class="modal fade" id="shop$sid"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -379,19 +385,29 @@
                                 <tbody>
                   EOT;
 
-                  $count = 1;
+                  $count = 0;
                   # SQL查詢
                   $stmt = $conn->prepare("select picture, picture_type, meal_name, price, quantity FROM product where sid=:sid");
                   $stmt->execute(array(':sid' => $sid));  # 防SQL injection
+
                   
                   while($row = $stmt->fetch())
                   {
+                    
                     $picture = $row["picture"];
                     $picture_type = $row["picture_type"];
                     $meal_name = $row["meal_name"];
                     $price = $row["price"];
                     $quantity = $row["quantity"];
+
+                    $input_meal_number = $sid."_".$count; # 每個meal的index，後面php有辦法取得這種可變數量的資料
+                    $input_quantity_name = $input_meal_number."quantity";
+                    $input_meal_name_name = $input_meal_number."meal_name";
+                    $input_picture_name = $input_meal_number."picture";
+                    $input_picture_type_name = $input_meal_number."picture_type";
+                    $input_price_name = $input_meal_number."price";
                     
+                    $count++;
                     echo <<<EOT
                       <tr>
                         <th scope="row">$count</th>
@@ -399,25 +415,35 @@
                         <td>$meal_name</td>
                         <td>$price </td>
                         <td>$quantity </td>
-                        <td> <input type="number" min="1" max="$quantity" style="width:80px"></input> </td>
+                        <td><input class="form-control" name="$input_quantity_name" type="number" value="0" min="0" max="$quantity" style="width:80px"></input> </td>
+                        <td><input class="form-control" name="$input_meal_name_name" value="$meal_name" type="hidden"></td>
+                        <td><input class="form-control" name="$input_picture_name" value="$picture" type="hidden"></td>
+                        <td><input class="form-control" name="$input_picture_type_name" value="$picture_type" type="hidden"></td>
+                        <td><input class="form-control" name="$input_price_name" value="$price" type="hidden"></td>
                       </tr> 
                     EOT;
-                    $count++;
                   }
 
                   echo <<<EOT
                                 </tbody>
                               </table>
+                              <input class="form-control" name="meal_count" value="$count" type="hidden">
+                              <label for="order_type">Order Type</label>
+                              <select name="order_type" id="order_type">
+                                <option value="delivery">Delivery</option>
+                                <option value="pick_up">Pick-up</option>
+                              </select>
                             </div>
                           </div>
                         </div>
 
                         <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Order</button>
+                          <button type="submit" class="btn btn-default">Calculate the price</button>
                         </div>
                       </div>
                     </div>
                   </div>
+                  </form>
                   EOT;
                 }
               }
@@ -478,9 +504,6 @@
               </div>
             </div>
           </div>
-
-
-
           <div class=" row" style=" margin-top: 25px;">
             <div class=" col-xs-3">
               <button type="submit" class="btn btn-primary" <?php echo ($is_manager) ? "disabled" : ""; ?> >register</button>
@@ -544,13 +567,16 @@
                   ### 顯示自己店家內商品 ###
                   if($is_manager)
                   {
-                    $count = 1;
+                    $count = 0;
                     # SQL查詢
                     $stmt = $conn->prepare("select picture, picture_type, meal_name, price, quantity FROM product where sid=:sid");
                     $stmt->execute(array(':sid' => $_SESSION['sid']));  # 防SQL injection
                     
                     while($row = $stmt->fetch())
                     {
+                      #!!! data-target和id有空白的話edit按鈕會無法打開modal，不知道原因
+                      $count++;
+                      $modal_id = $_SESSION['sid']."_".$count;
                       $picture = $row["picture"];
                       $picture_type = $row["picture_type"];
                       $meal_name = $row["meal_name"];
@@ -565,13 +591,13 @@
                           <td>$price </td>
                           <td>$quantity </td>
                           <td>
-                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#$meal_name">
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#$modal_id">
                               Edit
                             </button>
                           </td>
 
                           <form action="./php/edit_meal.php" method="POST">
-                            <div class="modal fade" id="$meal_name" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal fade" id="$modal_id" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                               <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                   <div class="modal-header">
@@ -612,21 +638,23 @@
                           </td>
                         </tr> 
                       EOT;
-                      $count++;
                     }
                   }
                 ?>
               </tbody>
             </table>
           </div>
-
         </div>
-
-
       </div>
 
+      <div id="my_order" class="tab-pane fade">
+      </div>
 
+      <div id="shop_order" class="tab-pane fade">
+      </div>
 
+      <div id="transaction_record" class="tab-pane fade">
+      </div>
     </div>
   </div>
 

@@ -84,6 +84,7 @@
         $location = "POINT($longitude $latitude)"; # 因為bindParam的第二個參數一定要放一個變數
       
         # SQL
+        # UID用A_I(auto increment)，所以可以給NULL，會自己幫忙填
         $stmt=$conn->prepare("insert into user (UID, account, password, user_name, identity, user_location, phonenumber, money, salt) 
                               values (NULL, :account, :password, :user_name, :identity, 
                               ST_GeomFromText(:location,0), :phonenumber, :money, :salt)");
