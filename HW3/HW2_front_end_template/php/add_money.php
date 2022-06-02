@@ -45,8 +45,8 @@
         $action = "recharge";
         # foreign key可以是NULL，但要記得去資料庫調說可以NULL
         # time的type用timestamp所以可以給NULL，會自己幫忙填
-        $stmt=$conn->prepare("insert into transaction_record (TID, action, money_change, time, trader, UID) values (NULL, :action, :value, NULL, :trader, :UID)"); 
-        $stmt->execute(array(':action' => $action, 'value' => $value, ':trader' => $_SESSION['user_name'], 'UID' => $uid));
+        $stmt=$conn->prepare("insert into transaction_record (TID, action, time, trader, money_change, UID) values (NULL, :action, NULL, :trader, :value, :UID)"); 
+        $stmt->execute(array(':action' => $action, ':trader' => $_SESSION['user_name'], 'value' => $value, 'UID' => $uid));
 
         # 跳出alert顯示更新成功，然後跳轉回主頁
         echo <<<EOT

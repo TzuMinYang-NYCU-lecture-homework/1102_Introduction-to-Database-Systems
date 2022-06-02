@@ -123,7 +123,7 @@
         EOT;
     }
 
-    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回登入頁面
+    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回註冊頁面
     {
         $msg = $e->getMessage();
         echo <<<EOT

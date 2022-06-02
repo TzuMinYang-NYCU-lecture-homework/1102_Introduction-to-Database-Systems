@@ -63,7 +63,7 @@
   <title>Hello, world!</title>
 
   <script>
-		function check_shop_name(shop_name)
+		function check_shop_name(shop_name) // 用AJAX確認shop name
 		{
 			if (shop_name != "")
 			{
@@ -93,6 +93,11 @@
 			}
 			else document.getElementById("msg").innerHTML = "";
 		}
+
+    /*function select_trigger_transaction_search()
+    {
+      document.getElementById("transaction_search").click();
+    }*/
   </script>
 
 </head>
@@ -111,7 +116,7 @@
 
     <ul class="nav nav-tabs">
       <li class="active"><a href="#home">Home</a></li>
-      <li><a href="#menu1">Shop</a></li>
+      <li><a href="#shop">Shop</a></li>
       <li><a href="#my_order">My Order</a></li>
       <li><a href="#shop_order">Shop Order</a></li>
       <li><a href="#transaction_record">Transaction Record</a></li>
@@ -481,7 +486,7 @@
           $_SESSION['sid'] = $row["SID"];
         }
       ?>
-      <div id="menu1" class="tab-pane fade">
+      <div id="shop" class="tab-pane fade">
         <form action="./php/register_shop.php" method="POST">
           <h3> Start a business </h3>
           <div class="form-group ">
@@ -654,6 +659,59 @@
       </div>
 
       <div id="transaction_record" class="tab-pane fade">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3> Transaction Record </h3>
+            <form action="./php/search_transaction_record.php" method="POST">
+              <label for="transaction_record_action">Action</label>
+              <select class="form-control" name="transaction_record_action" id="transaction_record_action" style="width:120px;"><!-- onchange="select_trigger_transaction_search()"-->
+                <option value="all">ALL</option>
+                <option value="payment">Payment</option>
+                <option value="receive">Receive</option>
+                <option value="recharge">Recharge</option>
+              </select>
+              <button type="submit" id="transaction_search" class="btn btn-default">Search</button> <!-- 要hidden的話，class="btn btn-default"要去掉-->
+            </form>
+          </div>
+        </div>
+
+        <div class="row">
+          <?php if(isset($_SESSION['transaction_record_result'])): ?>
+            <table class="table" style=" margin-top: 15px;">
+              <thead>
+                <tr>
+                  <th scope="col">Record ID</th>
+                  <th scope="col">Action</th>
+                  <th scope="col">Time</th>
+                  <th scope="col">Trader</th>
+                  <th scope="col">Amount Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  $count = 0;
+                  foreach($_SESSION['transaction_record_result'] as $single_row)
+                  {
+                    $count++;
+                    $action = $single_row['action'];
+                    $time = $single_row['time'];
+                    $trader = $single_row['trader'];
+                    $money_change = $single_row['money_change'];
+                    echo <<<EOT
+                      <tr>
+                        <th scope="row"> $count </th>
+                        <td> $action </td>
+                        <td> $time </td>
+                        <td> $trader </td>
+                        <td> $money_change </td>
+                      </tr>
+                    EOT;
+                  }
+                ?>
+              </tbody>
+            </table>
+          <?php endif ?>
+        </div>
       </div>
     </div>
   </div>
@@ -666,6 +724,14 @@
         $(this).tab('show');
       });
     });
+
+    // 跳到網址定位的#tab_name頁面，例如網址後面多打#shop，就會跳到shop頁面
+    var hash = location.hash.replace(/^#/, '');  // ^ means starting, meaning only match the first hash
+    if (hash) {
+        $('.nav-tabs a[href="#' + hash + '"]').tab('show'); 
+    }
+
+    //document.getElementById("transaction_search").click(); // 每次載入頁面都先搜尋一次，!!!現在沒用
   </script>
 
   <!-- Option 2: Separate Popper and Bootstrap JS -->

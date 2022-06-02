@@ -82,7 +82,7 @@
         <body>
             <script>
                 alert("Register Sucess.");
-                window.location.replace("../nav.php#menu1");
+                window.location.replace("../nav.php#shop");
             </script>
         </body>
         </html>
@@ -98,7 +98,7 @@
         <body>
             <script>
                 alert("$msg");
-                window.location.replace("../nav.php#menu1");
+                window.location.replace("../nav.php#shop");
             </script>
         </body>
         </html>

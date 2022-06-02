@@ -42,21 +42,21 @@
         $stmt->bindParam(':meal_name', $meal_name, PDO::PARAM_STR);
         $stmt->execute();
 
-        # 跳出alert顯示更新成功，然後跳轉回主頁
+        # 跳出alert顯示更新成功，然後跳轉回SHOP
         echo <<<EOT
         <!DOCTYPE html>
         <html>
         <body>
             <script>
                 alert("Edit Sucess.");
-                window.location.replace("../nav.php");
+                window.location.replace("../nav.php#shop");
             </script>
         </body>
         </html>
         EOT;
     }
 
-    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回主頁
+    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回SHOP
     {
         $msg = $e->getMessage();
         echo <<<EOT
@@ -65,7 +65,7 @@
         <body>
             <script>
                 alert("$msg");
-                window.location.replace("../nav.php");
+                window.location.replace("../nav.php#shop");
             </script>
         </body>
         </html>

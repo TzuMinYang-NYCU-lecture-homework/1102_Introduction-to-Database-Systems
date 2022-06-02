@@ -10,7 +10,7 @@
         # 避免直接輸入網址跳過來
         if (!isset($_POST['meal_name']) || !isset($_POST['price']) || !isset($_POST['quantity'])) # 在from加上Enctype="multipart/form-data"就不會有_POST的myFile了
         {
-            header("Location: ../nav.php#menu1");
+            header("Location: ../nav.php#shop");
             exit();
         }
         
@@ -66,7 +66,7 @@
         <body>
             <script>
                 alert("Add Sucess.");
-                window.location.replace("../nav.php#menu1");
+                window.location.replace("../nav.php#shop");
             </script>
         </body>
         </html>
@@ -82,7 +82,7 @@
         <body>
             <script>
                 alert("$msg");
-                window.location.replace("../nav.php#menu1");
+                window.location.replace("../nav.php#shop");
             </script>
         </body>
         </html>

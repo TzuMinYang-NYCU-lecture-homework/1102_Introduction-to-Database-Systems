@@ -152,14 +152,14 @@
                 </div>
             </div>
             </div>
-            <input class="form-control" name="total_price" value="$total_price" type="hidden">
+            <input class="form-control" name="delivery_fee" value="$delivery_fee" type="hidden">
             </form>
         </body>
         </html>
         EOT;
     }
 
-    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回商店頁面
+    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回HOME
     {
         $msg = $e->getMessage();
         echo <<<EOT
