@@ -127,8 +127,8 @@
         # 現在所有餐點都有在店家內了，因為剛才有檢查過
         for ($i = 0; $i < $meal_count; $i++)
         {
-            $stmt=$conn->prepare("insert into order_product (OID, PID, product_quantity) VALUES (:OID, :PID, :quantity)"); 
-            $stmt->execute(array('OID' => $OID, 'PID' => $shop_PID_array[$meal_in_user_map_to_meal_in_shop[$i]], ':quantity' => $input_quantity_array[$i]));
+            $stmt=$conn->prepare("insert into order_product (OID, PID, product_quantity, product_price) VALUES (:OID, :PID, :quantity, :price)"); 
+            $stmt->execute(array('OID' => $OID, 'PID' => $shop_PID_array[$meal_in_user_map_to_meal_in_shop[$i]], ':quantity' => $input_quantity_array[$i], ':price' => $shop_price_array[$meal_in_user_map_to_meal_in_shop[$i]]));
         }
 
         # 取得店家name, 店長uid

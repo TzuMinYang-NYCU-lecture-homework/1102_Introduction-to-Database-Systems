@@ -653,6 +653,180 @@
       </div>
 
       <div id="my_order" class="tab-pane fade">
+        <div class="row">
+          <div class="col-xs-12">
+            <form action="./php/search_my_order.php" method="POST">
+              </br>
+              <label for="my_order_action">Status</label>
+              <select class="form-control" name="my_order_action" id="my_order_action" style="width:120px;"><!--切換搜尋選項-->
+                <option value="all">ALL</option>
+                <option value="finished">Finished</option>
+                <option value="not_finish">Not Finish</option>
+                <option value="cancel">Cancel</option>
+              </select>
+              <button type="submit" id="my_order_search" class="btn btn-default">Search</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="row">
+          <?php if(isset($_SESSION['my_order_result'])): ?>
+            <table class="table" style=" margin-top: 15px;">
+              <thead>
+                <tr>
+                  <th scope="col">Order ID</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Start</th>
+                  <th scope="col">End</th>
+                  <th scope="col">Shop name</th>
+                  <th scope="col">Total Price</th>
+                  <th scope="col">Order Detail</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  $count = 0;
+                  foreach($_SESSION['my_order_result'] as $single_row)
+                  {
+                    $count++;
+                    $status = $single_row['status'];
+                    $create_time = $single_row['create_time'];
+                    $finish_time = $single_row['finish_time'];
+                    $SID = $single_row['SID'];
+                    $OID = $single_row['OID'];
+                    $price = $single_row['price'];
+
+                    $stmt = $conn->prepare("select shop_name FROM shop where sid=:sid");
+                    $stmt->execute(array(':sid' => $SID));  # 防SQL injection
+                    $shop = $stmt->fetch();
+                    $shop_name = $shop['shop_name'];
+
+                    echo <<<EOT
+                      <tr>
+                        <th scope="row"> $count </th>
+                        <td> $status </td>
+                        <td> $create_time </td>
+                        <td> $finish_time </td>
+                        <td> $shop_name </td>
+                        <td> $price </td>
+                        <td>
+                          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#order$OID">
+                            order details
+                          </button>
+                        </td>
+                        <td>
+                          
+                        </td>
+                      </tr>
+                    EOT;
+                  }
+                ?>
+              </tbody>
+            </table>
+          <?php endif ?>
+        </div>
+            <?php
+              ### 每個order的modal ###
+              if(isset($_SESSION['my_order_result']))
+              {
+                foreach($_SESSION['my_order_result'] as $single_row)
+                {
+                  $oid = $single_row['OID'];
+                  echo <<<EOT
+                  <!-- Modal -->
+                  <div class="modal fade" id="order$oid"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Order</h4>
+                        </div>
+
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="  col-xs-12">
+                              <table class="table" style=" margin-top: 15px;">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Picture</th>
+                                    <th scope="col">meal name</th>
+                                    <th scope="col">price</th>
+                                    <th scope="col">Order Quantity</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                  EOT;
+
+                  $subtotal = 0;
+                  $count = 0;
+                  # SQL查詢
+                  $stmt = $conn->prepare("select PID, product_quantity, product_price FROM order_product where OID=:oid");
+                  $stmt->execute(array(':oid' => $oid));  # 防SQL injection
+                  
+                  while($row = $stmt->fetch())
+                  {
+
+                    $stmt2 = $conn->prepare("select picture, picture_type, meal_name, price FROM product where PID=:pid");
+                    $stmt2->execute(array(':pid' => $row['PID']));  # 防SQL injection
+
+                    $product = $stmt2->fetch();
+                    
+                    $picture = $product["picture"];
+                    $picture_type = $product["picture_type"];
+                    $meal_name = $product["meal_name"];
+                    $price = $row["product_price"];
+                    $quantity = $row["product_quantity"];
+                    
+                    $subtotal += $price * $quantity;
+                    $count++;
+                    echo <<<EOT
+                      <tr>
+                        <th scope="row">$count</th>
+                        <td><img src="data:$picture_type; base64, $picture" width="50" heigh="10" /></td>
+                        <td>$meal_name</td>
+                        <td>$price </td>
+                        <td>$quantity </td>
+                      </tr> 
+                    EOT;
+                  }
+
+                  # 取distance
+                  $stmt = $conn->prepare("select st_distance_sphere(user_location, shop_location) as distance from shop, user where sid=:sid and user.uid=:uid");
+                  $stmt->execute(array(':sid' => $SID, ':uid' => $_SESSION['UID']));  # 防SQL injection
+                  $row = $stmt->fetch();
+                  $distance = $row['distance'];
+                  $delivery_fee = 0;
+
+                  if($single_row['order_type'] == 'delivery')
+                  {
+                      $delivery_fee = round($distance / 1000 * 10);
+                      if($delivery_fee < 10) $delivery_fee = 10;
+                  }
+
+                  $total_price = $subtotal + $delivery_fee;
+                  
+                  echo <<< EOT
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          Subtotal $subtotal<br>
+                          Delivery fee $delivery_fee<br>
+                          Total price $total_price<br>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  EOT;
+                }
+              }
+            ?>
       </div>
 
       <div id="shop_order" class="tab-pane fade">

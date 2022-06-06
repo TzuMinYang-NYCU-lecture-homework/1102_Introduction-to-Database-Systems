@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2022-06-02 11:31:11
+-- 產生時間： 2022-06-06 17:39:22
 -- 伺服器版本： 10.4.24-MariaDB
 -- PHP 版本： 8.1.5
 
@@ -41,7 +41,8 @@ INSERT INTO `order_` (`OID`, `status`, `create_time`, `finish_time`, `distance`,
 (7, 'not finished', '2022-06-02 07:12:21', '2022-06-02 07:12:21', 13028914.82248, 130449, 'delivery', 14, 9),
 (8, 'not finished', '2022-06-02 07:23:26', '2022-06-02 07:23:26', 13032151.056227, 131882, 'delivery', 14, 8),
 (9, 'not finished', '2022-06-02 08:44:42', '2022-06-02 08:44:42', 13028914.82248, 130549, 'delivery', 14, 9),
-(10, 'not finished', '2022-06-02 09:20:00', '2022-06-02 09:20:00', 13032151.056227, 270, 'pick_up', 14, 8);
+(10, 'not finished', '2022-06-02 09:20:00', '2022-06-02 09:20:00', 13032151.056227, 270, 'pick_up', 14, 8),
+(13, 'not finished', '2022-06-06 15:33:23', '2022-06-06 15:33:23', 13032151.056227, 130472, 'delivery', 14, 8);
 
 -- --------------------------------------------------------
 
@@ -52,20 +53,22 @@ INSERT INTO `order_` (`OID`, `status`, `create_time`, `finish_time`, `distance`,
 CREATE TABLE `order_product` (
   `OID` int(11) NOT NULL,
   `PID` int(11) NOT NULL,
-  `product_quantity` int(11) NOT NULL
+  `product_quantity` int(11) NOT NULL,
+  `product_price` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- 傾印資料表的資料 `order_product`
 --
 
-INSERT INTO `order_product` (`OID`, `PID`, `product_quantity`) VALUES
-(7, 13, 1),
-(8, 10, 18),
-(8, 11, 3),
-(9, 14, 2),
-(10, 10, 3),
-(10, 11, 3);
+INSERT INTO `order_product` (`OID`, `PID`, `product_quantity`, `product_price`) VALUES
+(7, 13, 1, 160),
+(8, 10, 18, 30),
+(8, 11, 3, 60),
+(9, 14, 2, 130),
+(10, 10, 3, 30),
+(10, 11, 3, 60),
+(13, 10, 5, 30);
 
 -- --------------------------------------------------------
 
@@ -161,7 +164,10 @@ INSERT INTO `transaction_record` (`TID`, `action`, `time`, `trader`, `money_chan
 (18, 'recharge', '2022-06-02 09:08:29', 'userone', 100000, 14),
 (19, 'recharge', '2022-06-02 09:17:59', 'userone', 130000, 14),
 (20, 'payment', '2022-06-02 09:20:00', 'macdonald', -270, 14),
-(21, 'receive', '2022-06-02 09:20:00', 'userone', 270, 14);
+(21, 'receive', '2022-06-02 09:20:00', 'userone', 270, 14),
+(22, 'recharge', '2022-06-06 10:26:33', 'userone', 1, 14),
+(23, 'payment', '2022-06-06 15:33:23', 'macdonald', -130472, 14),
+(24, 'receive', '2022-06-06 15:33:23', 'userone', 130472, 14);
 
 -- --------------------------------------------------------
 
@@ -193,7 +199,7 @@ INSERT INTO `user` (`UID`, `account`, `password`, `user_name`, `identity`, `user
 (11, 'ccc', '52905a96f607594941f7bc96b31c7262fa8ecda9fcae85dcbc5f48c9c936bc67', 'ccc', 'manager', 0x000000000101000000b6f3fdd478e95e4025068195431b4e40, '0912345676', 0, 5147),
 (12, 'ddd', '1ea13c0612fb33072c7da9d6f11ff0fb0e3d36cb83769f0e8ce0e217c3fd02ce', 'ddd', 'manager', 0x0000000001010000008fc2f5285c0f4d402b8716d9cef7f1bf, '0912345671', 0, 2455),
 (13, 'eee', '12ffd4990ec2f28ffd2eb6007ab5abfc5471af70beb06313616acb108c1aa3e8', 'eee', 'manager', 0x00000000010100000048e17a14ae4756c000000000000028c0, '0912345623', 0, 4116),
-(14, 'user1', '7ec9b918047bcc570087c13e1ecb2748150f51b6f225191314965b099c34d669', 'userone', 'manager', 0x000000000101000000000000000000e03f000000000000e03f, '0911111111', 938567, 6497),
+(14, 'user1', '7ec9b918047bcc570087c13e1ecb2748150f51b6f225191314965b099c34d669', 'userone', 'manager', 0x000000000101000000000000000000e03f000000000000e03f, '0911111111', 938568, 6497),
 (15, 'user2', '74dff100f378259b26e304e7d304c303550f4f432a4008d4f16f3f65616d8c35', 'usertwo', 'manager', 0x000000000101000000a9fbeceb613e5e40818e8059bbcf3840, '0922222222', 391447, 9195),
 (16, 'user3', 'b4e7a04ea6a3af137f1864143089a3228388ccf557a359ae3f12b8a6ee5cf936', 'Tom', 'manager', 0x00000000010100000085e8855bd63f5ec013a2176e59ff3440, '0912345678', 0, 8029);
 
@@ -253,7 +259,7 @@ ALTER TABLE `user`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `order_`
 --
 ALTER TABLE `order_`
-  MODIFY `OID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `OID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `product`
@@ -271,7 +277,7 @@ ALTER TABLE `shop`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `transaction_record`
 --
 ALTER TABLE `transaction_record`
-  MODIFY `TID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `TID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `user`
