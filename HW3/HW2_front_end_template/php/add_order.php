@@ -99,7 +99,7 @@
             # time的type用timestamp所以可以給NULL，會自己幫忙填
             # finish_time先讓他照填，之後再更新就好
             $stmt=$conn->prepare("insert into order_ (OID, status, create_time, finish_time, distance, price, order_type, UID, SID) 
-                                VALUES (NULL, 'not finished', NULL, NULL, :distance, :price, :order_type, :UID, :SID)"); 
+                                VALUES (NULL, 'not finished', current_timestamp(), current_timestamp(), :distance, :price, :order_type, :UID, :SID)"); 
             $stmt->execute(array(':distance' => $distance, ':price' => $total_price, ':order_type' => $order_type, ':UID' => $uid, ':SID' => $sid)); # 注意price要用資料庫算的
 
             # 結束transaction
@@ -142,7 +142,7 @@
         $action = "payment";
         $total_price *= -1;
         # foreign key可以是NULL，但要記得去資料庫調說可以NULL
-        $stmt=$conn->prepare("insert into transaction_record (TID, action, time, trader, money_change, UID) values (NULL, :action, NULL, :trader, :price, :UID)"); 
+        $stmt=$conn->prepare("insert into transaction_record (TID, action, time, trader, money_change, UID) values (NULL, :action, current_timestamp(), :trader, :price, :UID)"); 
         $stmt->execute(array(':action' => $action, ':trader' => $shop_name, ':price' => $total_price, ':UID' => $uid));
 
         # 前面有取過user的餘額了
@@ -155,7 +155,7 @@
         $action = "receive";
         $total_price *= -1;
         # foreign key可以是NULL，但要記得去資料庫調說可以NULL
-        $stmt=$conn->prepare("insert into transaction_record (TID, action, time, trader, money_change, UID) values (NULL, :action, NULL, :trader, :price, :UID)"); 
+        $stmt=$conn->prepare("insert into transaction_record (TID, action, time, trader, money_change, UID) values (NULL, :action, current_timestamp(), :trader, :price, :UID)"); 
         $stmt->execute(array(':action' => $action, ':trader' => $user_name, ':price' => $total_price, ':UID' => $shop_manager_uid));
 
         # 取得shop_mangager的餘額

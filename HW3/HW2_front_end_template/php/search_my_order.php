@@ -10,13 +10,24 @@
         # 避免直接輸入網址跳過來
         if (!isset($_POST['my_order_action']))
         {
-            header("Location: ../nav.php");
-            exit();
+            if ($_SESSION['cancel'] == NULL)
+            {
+                header("Location: ../nav.php");
+                exit();
+            }
         }
 
         # 取得POST的資料
-        $my_order_action = $_POST['my_order_action'];
+        if (isset($_SESSION['cancel']) && $_SESSION['cancel'] != NULL)
+        {
+            $my_order_action = $_SESSION['cancel'];
+            $_SESSION['cancel'] = NULL;
+        }
+        else
+            $my_order_action = $_POST['my_order_action'];
         $uid = $_SESSION['UID'];
+
+        $_SESSION['search_type'] = $my_order_action;
 
         # create PDO
         $conn = new PDO("mysql:host=$dbservername;dbname=$dbname", $dbusername, $dbpassword);
@@ -37,7 +48,13 @@
 
         $_SESSION['my_order_result'] = $stmt->fetchAll(PDO::FETCH_ASSOC); # 用relation中的column name當作array的index
 
-        # 跳轉回transaction_record
+        for($i = 0; $i < count($_SESSION['my_order_result']); $i++)
+        {
+            if ($_SESSION['my_order_result'][$i]['status'] == "not finished")
+            $_SESSION['my_order_result'][$i]['finish_time'] = NULL;
+        }
+
+        # 跳轉回my_order
         echo <<<EOT
         <!DOCTYPE html>
         <html>
@@ -50,7 +67,7 @@
         EOT;
     }
 
-    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回transaction_record
+    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回my_order
     {
         $msg = $e->getMessage();
         echo <<<EOT

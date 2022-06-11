@@ -661,7 +661,7 @@
               <select class="form-control" name="my_order_action" id="my_order_action" style="width:120px;"><!--切換搜尋選項-->
                 <option value="all">ALL</option>
                 <option value="finished">Finished</option>
-                <option value="not_finish">Not Finish</option>
+                <option value="not finished">Not Finish</option>
                 <option value="cancel">Cancel</option>
               </select>
               <button type="submit" id="my_order_search" class="btn btn-default">Search</button>
@@ -671,9 +671,11 @@
 
         <div class="row">
           <?php if(isset($_SESSION['my_order_result'])): ?>
+            <form action="./php/cancel.php" method="POST">
             <table class="table" style=" margin-top: 15px;">
               <thead>
                 <tr>
+                <th scope="col"></th>
                   <th scope="col">Order ID</th>
                   <th scope="col">Status</th>
                   <th scope="col">Start</th>
@@ -704,7 +706,24 @@
 
                     echo <<<EOT
                       <tr>
-                        <th scope="row"> $count </th>
+                    EOT;
+
+                        if ($status != "not finished") 
+                        {
+                          echo '<td></td><th scope="row">';
+                          echo $count;
+                          echo '</th>';
+                        }
+                        else 
+                        {
+                          echo '<td><input type="checkbox" name="checkbox[]" value="';
+                          echo $OID;
+                          echo '"></td><td>';
+                          echo $count;
+                          echo '</td>';
+                        }
+
+                    echo <<<EOT
                         <td> $status </td>
                         <td> $create_time </td>
                         <td> $finish_time </td>
@@ -716,12 +735,23 @@
                           </button>
                         </td>
                         <td>
-                          
+                    EOT;
+                    
+                    if ($status == "not finished") {
+                      echo '<button type="submit" name="cancel_order_id" class="btn btn-danger" value="';
+                      echo $OID;
+                      echo '">Cancel</button>';
+                    }
+                    echo <<<EOT
                         </td>
                       </tr>
                     EOT;
                   }
                 ?>
+              </br>
+                <button type="submit" class="btn btn-danger" value>Cancel selected orders</button>
+              </br>
+            </form>
               </tbody>
             </table>
           <?php endif ?>
