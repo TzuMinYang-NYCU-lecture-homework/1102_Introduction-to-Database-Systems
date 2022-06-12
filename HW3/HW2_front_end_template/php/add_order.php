@@ -123,12 +123,17 @@
             EOT;
         }
 
-        # 建立訂單內有哪些商品
         # 現在所有餐點都有在店家內了，因為剛才有檢查過
         for ($i = 0; $i < $meal_count; $i++)
         {
+            # 建立訂單內有哪些商品
             $stmt=$conn->prepare("insert into order_product (OID, PID, product_quantity, product_price) VALUES (:OID, :PID, :quantity, :price)"); 
             $stmt->execute(array('OID' => $OID, 'PID' => $shop_PID_array[$meal_in_user_map_to_meal_in_shop[$i]], ':quantity' => $input_quantity_array[$i], ':price' => $shop_price_array[$meal_in_user_map_to_meal_in_shop[$i]]));
+            
+            # 更新商家商品數量        
+            $new_quantity = intval($shop_quantity_array[$meal_in_user_map_to_meal_in_shop[$i]]) - intval($input_quantity_array[$i]);
+            $stmt = $conn->prepare("update product set quantity=:quantity where PID=:PID");
+            $stmt->execute(array(':PID' => $shop_PID_array[$meal_in_user_map_to_meal_in_shop[$i]], ':quantity' => $new_quantity));  # 防SQL injection
         }
 
         # 取得店家name, 店長uid

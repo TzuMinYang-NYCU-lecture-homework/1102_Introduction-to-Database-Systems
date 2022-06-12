@@ -94,10 +94,20 @@
 			else document.getElementById("msg").innerHTML = "";
 		}
 
-    /*function select_trigger_transaction_search()
+    function trigger_my_order_search()  // 切過去my_order時自動觸發一次search
+    {
+      document.getElementById("my_order_search").click();
+    }
+
+    function trigger_shop_order_search()  // 切過去shop_order時自動觸發一次search
+    {
+      document.getElementById("shop_order_search").click();
+    }
+
+    function trigger_transaction_search()  // 切過去transaction時自動觸發一次search
     {
       document.getElementById("transaction_search").click();
-    }*/
+    }
   </script>
 
 </head>
@@ -114,12 +124,12 @@
   
   <div class="container">
 
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" id="main_nav">
       <li class="active"><a href="#home">Home</a></li>
       <li><a href="#shop">Shop</a></li>
-      <li><a href="#my_order">My Order</a></li>
-      <li><a href="#shop_order">Shop Order</a></li>
-      <li><a href="#transaction_record">Transaction Record</a></li>
+      <li onclick="trigger_my_order_search()"><a href="#my_order">My Order</a></li>
+      <li onclick="trigger_shop_order_search()"><a href="#shop_order">Shop Order</a></li>
+      <li onclick="trigger_transaction_search()"><a href="#transaction_record">Transaction Record</a></li>
       <li><a href="./php/logout.php">Logout</a></li>
     </ul>
 
@@ -749,7 +759,7 @@
                   }
                 ?>
               </br>
-                <button type="submit" class="btn btn-danger" value>Cancel selected orders</button>
+                <button type="submit" class="btn btn-danger" name="cancel_order_id_many" value = "from_my_order">Cancel selected orders</button>
               </br>
             </form>
               </tbody>
@@ -932,10 +942,9 @@
     // 跳到網址定位的#tab_name頁面，例如網址後面多打#shop，就會跳到shop頁面
     var hash = location.hash.replace(/^#/, '');  // ^ means starting, meaning only match the first hash
     if (hash) {
-        $('.nav-tabs a[href="#' + hash + '"]').tab('show'); 
+      $('.nav-tabs a[href="#' + hash + '"]').tab('show'); 
+      setTimeout(() => {scroll(0,0);}, 50);
     }
-
-    //document.getElementById("transaction_search").click(); // 每次載入頁面都先搜尋一次，!!!現在沒用
   </script>
 
   <!-- Option 2: Separate Popper and Bootstrap JS -->

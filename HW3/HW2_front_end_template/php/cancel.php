@@ -10,6 +10,12 @@
         # 避免直接輸入網址跳過來
         if (!isset($_POST['cancel_order_id']) && !isset($_POST['checkbox']))
         {
+            if (isset($_POST['cancel_order_id_many']))
+            {
+                header("Location: ../nav.php#my_order");
+                exit();
+            }
+
             header("Location: ../nav.php");
             exit();
         }
