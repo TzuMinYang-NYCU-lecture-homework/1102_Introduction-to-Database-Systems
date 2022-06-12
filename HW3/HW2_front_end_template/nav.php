@@ -870,7 +870,184 @@
       </div>
 
       <div id="shop_order" class="tab-pane fade">
+        <div class="row">
+          <div class="col-xs-12">
+            <h3> Shop Order </h3>
+            <form action="./php/search_shop_order.php" method="POST">
+              <label for="shop_order_status">Status</label>
+              <select class="form-control" name="shop_order_status" id="shop_order_status" style="width:120px;"><!-- onchange="select_trigger_transaction_search()"-->
+                <option value="all">ALL</option>
+                <option value="finished">Finished</option>
+                <option value="not finished">Not Finish</option>
+                <option value="cancel">Cancel</option>
+              </select>
+              <button type="submit" id="shop_order_search" class="btn btn-default">Search</button> <!-- 要hidden的話，class="btn btn-default"要去掉-->
+            </form>
+          </div>
+        </div>
+
+        <div class="row">
+          <?php if(isset($_SESSION['shop_order_result'])): ?>
+            <table class="table" style=" margin-top: 15px;">
+              <thead>
+                <tr>
+                  <th scope="col">Order ID</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Start</th>
+                  <th scope="col">End</th>
+                  <th scope="col">Shop name</th>
+                  <th scope="col">Total Price</th>
+                  <th scope="col">Order Details</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  $count = 0;
+                  foreach($_SESSION['shop_order_result'] as $single_row)
+                  {
+                    $count++;
+                    $oid = $single_row['OID'];
+                    $SID = $single_row['SID'];
+                    $status = $single_row['status'];
+                    $start_time = $single_row['create_time'];
+                    $finish_time = $single_row['finish_time'];
+                    $shop_name = $single_row['shop_name'];
+                    $price = $single_row['price'];
+                    echo <<<EOT
+                      <tr>
+                        <th scope="row"> $count </th>
+                        <td> $status </td>
+                        <td> $start_time </td>
+                        <td> $finish_time </td>
+                        <td> $shop_name </td>
+                        <td> $price </td>
+                        <td> <button type="button" class="btn btn-info " data-toggle="modal" data-target="#order$oid">order details</button> </td>
+                        <td>
+                    EOT;
+                    if ($status == "not finished") {
+                      echo <<<EOT
+                      <form action="./php/cancel_shop.php" method="POST">
+                      <button type="submit" name="cancel_order_id" class="btn btn-danger" value="$oid">Cancel</button> <td>
+                      </form>
+                      <form action="./php/done_shop.php" method="POST">
+                      <button type="submit" name="done_order_id" class="btn btn-success" value="$oid">Done</button> </td>
+                      </form>
+                      EOT;
+                    }
+                    echo <<<EOT
+                        </td>
+                      </tr>
+                    EOT;
+                  }
+                ?>
+              </tbody>
+            </table>
+          <?php endif ?>
+        </div>
+            <?php
+              ### 每個order的modal ###
+              if(isset($_SESSION['shop_order_result']))
+              {
+                foreach($_SESSION['shop_order_result'] as $single_row)
+                {
+                  $oid = $single_row['OID'];
+                  echo <<<EOT
+                  <!-- Modal -->
+                  <div class="modal fade" id="order$oid"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Order</h4>
+                        </div>
+
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="  col-xs-12">
+                              <table class="table" style=" margin-top: 15px;">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Picture</th>
+                                    <th scope="col">meal name</th>
+                                    <th scope="col">price</th>
+                                    <th scope="col">Order Quantity</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                  EOT;
+
+                  $subtotal = 0;
+                  $count = 0;
+                  # SQL查詢
+                  $stmt = $conn->prepare("select PID, product_quantity, product_price FROM order_product where OID=:oid");
+                  $stmt->execute(array(':oid' => $oid));  # 防SQL injection
+                  
+                  while($row = $stmt->fetch())
+                  {
+
+                    $stmt2 = $conn->prepare("select picture, picture_type, meal_name, price FROM product where PID=:pid");
+                    $stmt2->execute(array(':pid' => $row['PID']));  # 防SQL injection
+
+                    $product = $stmt2->fetch();
+                    
+                    $picture = $product["picture"];
+                    $picture_type = $product["picture_type"];
+                    $meal_name = $product["meal_name"];
+                    $price = $row["product_price"];
+                    $quantity = $row["product_quantity"];
+                    
+                    $subtotal += $price * $quantity;
+                    $count++;
+                    echo <<<EOT
+                      <tr>
+                        <th scope="row">$count</th>
+                        <td><img src="data:$picture_type; base64, $picture" width="50" heigh="10" /></td>
+                        <td>$meal_name</td>
+                        <td>$price </td>
+                        <td>$quantity </td>
+                      </tr> 
+                    EOT;
+                  }
+
+                  # 取distance
+                  $stmt = $conn->prepare("select st_distance_sphere(user_location, shop_location) as distance from shop, user where sid=:sid and user.uid=:uid");
+                  $stmt->execute(array(':sid' => $SID, ':uid' => $_SESSION['UID']));  # 防SQL injection
+                  $row = $stmt->fetch();
+                  $distance = $row['distance'];
+                  $delivery_fee = 0;
+
+                  if($single_row['order_type'] == 'delivery')
+                  {
+                      $delivery_fee = round($distance / 1000 * 10);
+                      if($delivery_fee < 10) $delivery_fee = 10;
+                  }
+
+                  $total_price = $subtotal + $delivery_fee;
+                  
+                  echo <<< EOT
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          Subtotal $subtotal<br>
+                          Delivery fee $delivery_fee<br>
+                          Total price $total_price<br>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  EOT;
+                }
+              }
+            ?>
       </div>
+
 
       <div id="transaction_record" class="tab-pane fade">
         <div class="row">
