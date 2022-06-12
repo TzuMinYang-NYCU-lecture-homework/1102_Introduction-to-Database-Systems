@@ -94,6 +94,11 @@
 			else document.getElementById("msg").innerHTML = "";
 		}
 
+    function trigger_shop_search()  // 切過去home時自動觸發一次search
+    {
+      document.getElementById("shop_search").click();
+    }
+
     function trigger_my_order_search()  // 切過去my_order時自動觸發一次search
     {
       document.getElementById("my_order_search").click();
@@ -125,7 +130,7 @@
   <div class="container">
 
     <ul class="nav nav-tabs" id="main_nav">
-      <li class="active"><a href="#home">Home</a></li>
+      <li class="active" onclick="trigger_shop_search()"><a href="#home">Home</a></li>
       <li><a href="#shop">Shop</a></li>
       <li onclick="trigger_my_order_search()"><a href="#my_order">My Order</a></li>
       <li onclick="trigger_shop_order_search()"><a href="#shop_order">Shop Order</a></li>
@@ -268,7 +273,7 @@
                     <option>decrease</option>
                   </select>
                 </div>
-                <button type="submit" style="margin-left: 18px;"class="btn btn-primary">Search</button>
+                <button type="submit" id="shop_search" style="margin-left: 18px;"class="btn btn-primary">Search</button>
               </div>
             </form>
           </div>
@@ -682,88 +687,88 @@
         <div class="row">
           <?php if(isset($_SESSION['my_order_result'])): ?>
             <form action="./php/cancel.php" method="POST">
-            <table class="table" style=" margin-top: 15px;">
-              <thead>
-                <tr>
-                <th scope="col"></th>
-                  <th scope="col">Order ID</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Start</th>
-                  <th scope="col">End</th>
-                  <th scope="col">Shop name</th>
-                  <th scope="col">Total Price</th>
-                  <th scope="col">Order Detail</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                  $count = 0;
-                  foreach($_SESSION['my_order_result'] as $single_row)
-                  {
-                    $count++;
-                    $status = $single_row['status'];
-                    $create_time = $single_row['create_time'];
-                    $finish_time = $single_row['finish_time'];
-                    $SID = $single_row['SID'];
-                    $OID = $single_row['OID'];
-                    $price = $single_row['price'];
+              <table class="table" style=" margin-top: 15px;">
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Order ID</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                    <th scope="col">Shop name</th>
+                    <th scope="col">Total Price</th>
+                    <th scope="col">Order Detail</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+                    $count = 0;
+                    foreach($_SESSION['my_order_result'] as $single_row)
+                    {
+                      $count++;
+                      $status = $single_row['status'];
+                      $create_time = $single_row['create_time'];
+                      $finish_time = $single_row['finish_time'];
+                      $SID = $single_row['SID'];
+                      $OID = $single_row['OID'];
+                      $price = $single_row['price'];
 
-                    $stmt = $conn->prepare("select shop_name FROM shop where sid=:sid");
-                    $stmt->execute(array(':sid' => $SID));  # 防SQL injection
-                    $shop = $stmt->fetch();
-                    $shop_name = $shop['shop_name'];
+                      $stmt = $conn->prepare("select shop_name FROM shop where sid=:sid");
+                      $stmt->execute(array(':sid' => $SID));  # 防SQL injection
+                      $shop = $stmt->fetch();
+                      $shop_name = $shop['shop_name'];
 
-                    echo <<<EOT
-                      <tr>
-                    EOT;
+                      echo <<<EOT
+                        <tr>
+                      EOT;
 
-                        if ($status != "not finished") 
-                        {
-                          echo '<td></td><th scope="row">';
-                          echo $count;
-                          echo '</th>';
-                        }
-                        else 
-                        {
-                          echo '<td><input type="checkbox" name="checkbox[]" value="';
-                          echo $OID;
-                          echo '"></td><td>';
-                          echo $count;
-                          echo '</td>';
-                        }
+                      if ($status != "not finished") 
+                      {
+                        echo '<td></td><th scope="row">';
+                        echo $count;
+                        echo '</th>';
+                      }
+                      else 
+                      {
+                        echo '<td><input type="checkbox" name="checkbox[]" value="';
+                        echo $OID;
+                        echo '"></td><td>';
+                        echo $count;
+                        echo '</td>';
+                      }
 
-                    echo <<<EOT
-                        <td> $status </td>
-                        <td> $create_time </td>
-                        <td> $finish_time </td>
-                        <td> $shop_name </td>
-                        <td> $price </td>
-                        <td>
-                          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#order$OID">
-                            order details
-                          </button>
-                        </td>
-                        <td>
-                    EOT;
-                    
-                    if ($status == "not finished") {
-                      echo '<button type="submit" name="cancel_order_id" class="btn btn-danger" value="';
-                      echo $OID;
-                      echo '">Cancel</button>';
+                      echo <<<EOT
+                          <td> $status </td>
+                          <td> $create_time </td>
+                          <td> $finish_time </td>
+                          <td> $shop_name </td>
+                          <td> $price </td>
+                          <td>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#order$OID">
+                              order details
+                            </button>
+                          </td>
+                          <td>
+                      EOT;
+                      
+                      if ($status == "not finished") {
+                        echo '<button type="submit" name="cancel_order_id" class="btn btn-danger" value="';
+                        echo $OID;
+                        echo '">Cancel</button>';
+                      }
+                      echo <<<EOT
+                          </td>
+                        </tr>
+                      EOT;
                     }
-                    echo <<<EOT
-                        </td>
-                      </tr>
-                    EOT;
-                  }
-                ?>
-              </br>
-                <button type="submit" class="btn btn-danger" name="cancel_order_id_many" value = "from_my_order">Cancel selected orders</button>
-              </br>
+                  ?>
+                  </br>
+                    <button type="submit" class="btn btn-danger" name="cancel_order_id_many" value = "from_my_order">Cancel selected orders</button>
+                  </br>
+                </tbody>
+              </table>
             </form>
-              </tbody>
-            </table>
           <?php endif ?>
         </div>
             <?php
@@ -809,29 +814,46 @@
                   
                   while($row = $stmt->fetch())
                   {
-
                     $stmt2 = $conn->prepare("select picture, picture_type, meal_name, price FROM product where PID=:pid");
                     $stmt2->execute(array(':pid' => $row['PID']));  # 防SQL injection
 
-                    $product = $stmt2->fetch();
-                    
-                    $picture = $product["picture"];
-                    $picture_type = $product["picture_type"];
-                    $meal_name = $product["meal_name"];
-                    $price = $row["product_price"];
-                    $quantity = $row["product_quantity"];
-                    
-                    $subtotal += $price * $quantity;
-                    $count++;
-                    echo <<<EOT
-                      <tr>
-                        <th scope="row">$count</th>
-                        <td><img src="data:$picture_type; base64, $picture" width="50" heigh="10" /></td>
-                        <td>$meal_name</td>
-                        <td>$price </td>
-                        <td>$quantity </td>
-                      </tr> 
-                    EOT;
+                    if ($product = $stmt2->fetch())
+                    {
+                      $picture = $product["picture"];
+                      $picture_type = $product["picture_type"];
+                      $meal_name = $product["meal_name"];
+                      $price = $row["product_price"];
+                      $quantity = $row["product_quantity"];
+                      
+                      $subtotal += $price * $quantity;
+                      $count++;
+                      echo <<<EOT
+                        <tr>
+                          <th scope="row">$count</th>
+                          <td><img src="data:$picture_type; base64, $picture" width="50" heigh="10" /></td>
+                          <td>$meal_name</td>
+                          <td>$price </td>
+                          <td>$quantity </td>
+                        </tr> 
+                      EOT;
+                    }
+                    else 
+                    {
+                      $price = $row["product_price"];
+                      $quantity = $row["product_quantity"];
+                      
+                      $subtotal += $price * $quantity;
+                      $count++;
+                      echo <<<EOT
+                        <tr>
+                          <th scope="row">$count</th>
+                          <td>The product does not exist.</td>
+                          <td>The product does not exist.</td>
+                          <td>$price </td>
+                          <td>$quantity </td>
+                        </tr> 
+                      EOT;
+                    }
                   }
 
                   # 取distance
@@ -888,61 +910,81 @@
 
         <div class="row">
           <?php if(isset($_SESSION['shop_order_result'])): ?>
-            <table class="table" style=" margin-top: 15px;">
-              <thead>
-                <tr>
-                  <th scope="col">Order ID</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Start</th>
-                  <th scope="col">End</th>
-                  <th scope="col">Shop name</th>
-                  <th scope="col">Total Price</th>
-                  <th scope="col">Order Details</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                  $count = 0;
-                  foreach($_SESSION['shop_order_result'] as $single_row)
-                  {
-                    $count++;
-                    $oid = $single_row['OID'];
-                    $SID = $single_row['SID'];
-                    $status = $single_row['status'];
-                    $start_time = $single_row['create_time'];
-                    $finish_time = $single_row['finish_time'];
-                    $shop_name = $single_row['shop_name'];
-                    $price = $single_row['price'];
-                    echo <<<EOT
-                      <tr>
-                        <th scope="row"> $count </th>
-                        <td> $status </td>
-                        <td> $start_time </td>
-                        <td> $finish_time </td>
-                        <td> $shop_name </td>
-                        <td> $price </td>
-                        <td> <button type="button" class="btn btn-info " data-toggle="modal" data-target="#order$oid">order details</button> </td>
-                        <td>
-                    EOT;
-                    if ($status == "not finished") {
+            <form action="./php/cancel_and_done_shop.php" method="POST">
+              <table class="table" style=" margin-top: 15px;">
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Order ID</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                    <th scope="col">Shop name</th>
+                    <th scope="col">Total Price</th>
+                    <th scope="col">Order Details</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+                    $count = 0;
+                    foreach($_SESSION['shop_order_result'] as $single_row)
+                    {
+                      $count++;
+                      $oid = $single_row['OID'];
+                      $SID = $single_row['SID'];
+                      $status = $single_row['status'];
+                      $start_time = $single_row['create_time'];
+                      $finish_time = $single_row['finish_time'];
+                      $shop_name = $single_row['shop_name'];
+                      $price = $single_row['price'];
                       echo <<<EOT
-                      <form action="./php/cancel_shop.php" method="POST">
-                      <button type="submit" name="cancel_order_id" class="btn btn-danger" value="$oid">Cancel</button> <td>
-                      </form>
-                      <form action="./php/done_shop.php" method="POST">
-                      <button type="submit" name="done_order_id" class="btn btn-success" value="$oid">Done</button> </td>
-                      </form>
+                        <tr>
+                      EOT;
+
+                      if ($status != "not finished") 
+                      {
+                        echo '<td></td><th scope="row">';
+                        echo $count;
+                        echo '</th>';
+                      }
+                      else 
+                      {
+                        echo '<td><input type="checkbox" name="checkbox[]" value="';
+                        echo $oid;
+                        echo '"></td><td>';
+                        echo $count;
+                        echo '</td>';
+                      }
+
+                      echo <<<EOT
+                          <td> $status </td>
+                          <td> $start_time </td>
+                          <td> $finish_time </td>
+                          <td> $shop_name </td>
+                          <td> $price </td>
+                          <td> <button type="button" class="btn btn-info " data-toggle="modal" data-target="#shop_order$oid">order details</button> </td>
+                          <td>
+                      EOT;
+                      if ($status == "not finished") {
+                        echo <<<EOT
+                        <button type="submit" name="cancel_order_id" class="btn btn-danger" value="$oid">Cancel</button> <td>
+                        <button type="submit" name="done_order_id" class="btn btn-success" value="$oid">Done</button> </td>
+                        EOT;
+                      }
+                      echo <<<EOT
+                          </td>
+                        </tr>
                       EOT;
                     }
-                    echo <<<EOT
-                        </td>
-                      </tr>
-                    EOT;
-                  }
-                ?>
-              </tbody>
-            </table>
+                  ?>
+                  </br>
+                    <button type="submit" class="btn btn-success" name="done_order_id_many" value = "from_my_order">Done selected orders</button>
+                    <button type="submit" class="btn btn-danger" name="cancel_order_id_many" value = "from_my_order">Cancel selected orders</button>
+                  </br>
+                </tbody>
+              </table>
+            </form>
           <?php endif ?>
         </div>
             <?php
@@ -954,7 +996,7 @@
                   $oid = $single_row['OID'];
                   echo <<<EOT
                   <!-- Modal -->
-                  <div class="modal fade" id="order$oid"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal fade" id="shop_order$oid"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
                     
                       <!-- Modal content-->
@@ -988,29 +1030,46 @@
                   
                   while($row = $stmt->fetch())
                   {
-
                     $stmt2 = $conn->prepare("select picture, picture_type, meal_name, price FROM product where PID=:pid");
                     $stmt2->execute(array(':pid' => $row['PID']));  # 防SQL injection
 
-                    $product = $stmt2->fetch();
-                    
-                    $picture = $product["picture"];
-                    $picture_type = $product["picture_type"];
-                    $meal_name = $product["meal_name"];
-                    $price = $row["product_price"];
-                    $quantity = $row["product_quantity"];
-                    
-                    $subtotal += $price * $quantity;
-                    $count++;
-                    echo <<<EOT
-                      <tr>
-                        <th scope="row">$count</th>
-                        <td><img src="data:$picture_type; base64, $picture" width="50" heigh="10" /></td>
-                        <td>$meal_name</td>
-                        <td>$price </td>
-                        <td>$quantity </td>
-                      </tr> 
-                    EOT;
+                    if ($product = $stmt2->fetch())
+                    {
+                      $picture = $product["picture"];
+                      $picture_type = $product["picture_type"];
+                      $meal_name = $product["meal_name"];
+                      $price = $row["product_price"];
+                      $quantity = $row["product_quantity"];
+                      
+                      $subtotal += $price * $quantity;
+                      $count++;
+                      echo <<<EOT
+                        <tr>
+                          <th scope="row">$count</th>
+                          <td><img src="data:$picture_type; base64, $picture" width="50" heigh="10" /></td>
+                          <td>$meal_name</td>
+                          <td>$price </td>
+                          <td>$quantity </td>
+                        </tr> 
+                      EOT;
+                    }
+                    else 
+                    {
+                      $price = $row["product_price"];
+                      $quantity = $row["product_quantity"];
+                      
+                      $subtotal += $price * $quantity;
+                      $count++;
+                      echo <<<EOT
+                        <tr>
+                          <th scope="row">$count</th>
+                          <td>The product does not exist.</td>
+                          <td>The product does not exist.</td>
+                          <td>$price </td>
+                          <td>$quantity </td>
+                        </tr> 
+                      EOT;
+                    }
                   }
 
                   # 取distance

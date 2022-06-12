@@ -12,14 +12,18 @@
         {
             if (isset($_POST['cancel_order_id_many']))
             {
-                header("Location: ../nav.php#my_order");
+                $_SESSION['cancel'] = $_SESSION['search_type'];
+                throw new Exception('ERROR: Please choose the checkbox.');
+            }
+            else 
+            {
+                header("Location: ../nav.php");
                 exit();
             }
-
-            header("Location: ../nav.php");
-            exit();
         }
         
+        $error = false;
+
         if (isset($_POST['checkbox']))
         {
             for ($i = 0; $i < count($_POST['checkbox']); $i++)
@@ -37,8 +41,11 @@
 
                 $order_detail = $stmt->fetch();
 
-                if ($order_detail['status'] != "not finished")
-                    throw new Exception('ERROR: Order cannot be canceled.'); 
+                if ($order_detail['status'] != "not finished") 
+                {
+                    $error = true;
+                    continue;
+                }
                 
                 # 取得店家name, 店長uid
                 $stmt = $conn->prepare("select shop_name, UID FROM shop where sid=:sid");
@@ -129,8 +136,12 @@
 
             $order_detail = $stmt->fetch();
 
-            if ($order_detail['status'] != "not finished")
+            if ($order_detail['status'] != "not finished") 
+            {
+                $_SESSION['cancel'] = $_SESSION['search_type'];
                 throw new Exception('ERROR: Order cannot be canceled.'); 
+            }
+                
             
             # 取得店家name, 店長uid
             $stmt = $conn->prepare("select shop_name, UID FROM shop where sid=:sid");
@@ -206,6 +217,11 @@
         }
 
         $_SESSION['cancel'] = $_SESSION['search_type'];
+
+        if ($error == true)
+        {
+            throw new Exception('ERROR: Order cannot be canceled.'); 
+        }
         
         echo <<<EOT
         <!DOCTYPE html>
@@ -229,10 +245,10 @@
         <body>
             <script>
                 alert("$msg");
-                window.location.replace("../nav.php#my_order");
+                window.location.replace("../php/search_my_order.php");
             </script>
         </body>
         </html>
-        EOT;
+        EOT;      
     }
 ?>
