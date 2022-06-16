@@ -10,7 +10,7 @@
         # 避免直接輸入網址跳過來
         if (!isset($_POST['transaction_record_action']))
         {
-            header("Location: ../nav.php");
+            header("Location: ../nav.php#transaction_record");
             exit();
         }
 

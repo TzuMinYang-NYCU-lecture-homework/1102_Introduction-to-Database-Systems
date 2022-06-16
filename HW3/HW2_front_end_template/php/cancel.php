@@ -17,7 +17,7 @@
             }
             else 
             {
-                header("Location: ../nav.php");
+                header("Location: ../nav.php#my_order");
                 exit();
             }
         }
@@ -44,7 +44,7 @@
                 if ($order_detail['status'] != "not finished") 
                 {
                     $error = true;
-                    continue;
+                    break;
                 }
                 
                 # 取得店家name, 店長uid

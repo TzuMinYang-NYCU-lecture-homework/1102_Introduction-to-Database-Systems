@@ -24,8 +24,39 @@
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); # set the PDO error mode to exception 
 
         # SQL
-        $stmt = $conn->prepare("delete from product where product.meal_name=:meal_name");
+        $stmt = $conn->prepare("select pid from product where product.meal_name=:meal_name and sid=:sid");
         $stmt->bindParam(':meal_name', $meal_name, PDO::PARAM_STR);
+        $stmt->bindParam(':sid', $_SESSION['sid'], PDO::PARAM_STR);
+        $stmt->execute();
+        $row = $stmt->fetch();
+        $pid = $row['pid'];
+        
+        $stmt = $conn->prepare("select oid from order_product where pid=:pid");
+        $stmt->bindParam(':pid', $pid, PDO::PARAM_STR);
+        $stmt->execute();
+        $row = $stmt->fetch();
+        $oid = $row['oid'];
+
+        $stmt = $conn->prepare("select oid from order_product where pid=:pid");
+        $stmt->bindParam(':pid', $pid, PDO::PARAM_STR);
+        $stmt->execute();
+        $_SESSION['result'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach($_SESSION['result'] as $single_row)
+        {
+            $oid=$single_row['oid'];
+            $stmt = $conn->prepare('select status from order_ where oid=:oid');
+            $stmt->bindParam(':oid', $oid, PDO::PARAM_STR);
+            $stmt->execute();
+            $row=$stmt->fetch();
+            if($row['status']=="not finished")
+            {
+                throw new Exception('ERROR: product cannot be deleted.(order not finished)'); 
+            }
+        }
+
+        $stmt = $conn->prepare("delete from product where product.meal_name=:meal_name and sid=:sid");
+        $stmt->bindParam(':meal_name', $meal_name, PDO::PARAM_STR);
+        $stmt->bindParam(':sid', $_SESSION['sid'], PDO::PARAM_STR);
         $stmt->execute();
 
         # 跳出alert顯示刪除成功，然後跳轉回SHOP

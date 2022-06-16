@@ -12,7 +12,7 @@
         {
             if ($_SESSION['cancel'] == NULL)
             {
-                header("Location: ../nav.php");
+                header("Location: ../nav.php#my_order");
                 exit();
             }
         }

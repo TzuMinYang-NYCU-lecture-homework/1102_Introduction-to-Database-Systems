@@ -12,7 +12,7 @@
         {
             if ($_SESSION['cancel'] == NULL && $_SESSION['done'] == NULL)
             {
-                header("Location: ../nav.php");
+                header("Location: ../nav.php#shop_order");
                 exit();
             }
         }
@@ -40,7 +40,7 @@
         $conn = new PDO("mysql:host=$dbservername;dbname=$dbname", $dbusername, $dbpassword);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); # set the PDO error mode to exception 
 
-        # 取得transaction_record
+        # 取得
         $stmt = $conn->prepare("select identity from user where UID=:UID");
         $stmt->execute(array(':UID' => $uid));  # 防SQL injection
 
@@ -67,7 +67,7 @@
             $_SESSION['shop_order_result'][$i]['finish_time'] = NULL;
         }
 
-        # 跳轉回transaction_record
+        # 跳轉回
         echo <<<EOT
         <!DOCTYPE html>
         <html>
@@ -80,7 +80,7 @@
         EOT;
     }
 
-    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回transaction_record
+    catch(Exception $e) # 跳出alert顯示錯誤訊息，然後跳轉回
     {
         $msg = $e->getMessage();
         echo <<<EOT

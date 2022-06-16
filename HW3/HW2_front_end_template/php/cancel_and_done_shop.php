@@ -17,7 +17,7 @@
                 throw new Exception('ERROR: Please choose the checkbox.');
             }
 
-            header("Location: ../nav.php");
+            header("Location: ../nav.php#shop_order");
             exit();
         }
 
@@ -45,7 +45,7 @@
                     {
                         echo $order_detail['status'];
                         $error = true;
-                        continue;
+                        break;
                     }
 
                     #更新order status跟finish time
@@ -70,7 +70,11 @@
                 $order_detail = $stmt->fetch();
 
                 if ($order_detail['status'] != "not finished")
-                    throw new Exception('ERROR: Order cannot be done.'); 
+                {
+                    $_SESSION['done'] = $_SESSION['search_type'];
+                    throw new Exception('ERROR: Order cannot be done.');                     
+                }
+
 
                 #更新order status跟finish time
                 $stmt = $conn->prepare("update order_ set status='finished', finish_time=current_timestamp() where OID=:OID");
@@ -80,7 +84,8 @@
             $_SESSION['done'] = $_SESSION['search_type'];
             
             if ($error == true)
-                throw new Exception('ERROR: Order cannot be done.'); 
+                throw new Exception('ERROR: Order cannot be done.');            
+
                 
             echo <<<EOT
             <!DOCTYPE html>
@@ -117,7 +122,7 @@
                     if ($order_detail['status'] != "not finished")
                     {
                         $error = true;
-                        continue;
+                        break;
                     }
                     
                     # 取得店家name, 店長uid
@@ -209,7 +214,11 @@
                 $order_detail = $stmt->fetch();
                 $uid = $order_detail['UID'];
                 if ($order_detail['status'] != "not finished")
-                    throw new Exception('ERROR: Order cannot be canceled.'); 
+                {
+                    $_SESSION['cancel'] = $_SESSION['search_type'];
+                    throw new Exception('ERROR: Order cannot be canceled.');                     
+                }
+
                 
                 # 取得店家name, 店長uid
                 $stmt = $conn->prepare("select shop_name, UID FROM shop where sid=:sid");
@@ -287,7 +296,7 @@
             $_SESSION['cancel'] = $_SESSION['search_type'];
 
             if ($error == true)
-                throw new Exception('ERROR: Order cannot be canceled.'); 
+                throw new Exception('ERROR: Order cannot be canceled.');      
             
             echo <<<EOT
             <!DOCTYPE html>
