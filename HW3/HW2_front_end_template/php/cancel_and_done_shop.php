@@ -25,7 +25,7 @@
 
         if (isset($_POST['done_order_id']) || isset($_POST['done_order_id_many'])) 
         {
-            if (isset($_POST['checkbox']))
+            if (isset($_POST['done_order_id_many']))
             {
                 for ($i = 0; $i < count($_POST['checkbox']); $i++)
                 {
@@ -102,7 +102,7 @@
 
         else 
         {
-            if (isset($_POST['checkbox']))
+            if (isset($_POST['cancel_order_id_many']))
             {
                 for ($i = 0; $i < count($_POST['checkbox']); $i++)
                 {
